@@ -27,17 +27,25 @@ cls
 echo ===============================================
 echo            LDL Windows ToolBox
 echo ===============================================
-echo [1] Advanced System Cleanup
-echo [2] Clear Event Viewer Logs
-echo [3] Manual SSD TRIM (Optimized for KC3000)
-echo [4] Exit
+echo [1] Advanced System Cleanup (with Space Calculator)
+echo [2] System Integrity Repair (SFC + DISM)
+echo [3] Windows Component Store Cleanup (WinSxS)
+echo [4] Update All Installed Apps (Winget)
+echo [5] Complete Network Reset
+echo [6] Clear Event Viewer Logs
+echo [7] Manual SSD TRIM (Optimized for KC3000)
+echo [8] Exit
 echo ===============================================
 set /p toolbox_choice="Select an option: "
 
 if "!toolbox_choice!"=="1" goto cleanup
-if "!toolbox_choice!"=="2" goto event_logs
-if "!toolbox_choice!"=="3" goto ssd_trim
-if "!toolbox_choice!"=="4" exit
+if "!toolbox_choice!"=="2" goto sys_repair
+if "!toolbox_choice!"=="3" goto win_sxs
+if "!toolbox_choice!"=="4" goto app_update
+if "!toolbox_choice!"=="5" goto net_reset
+if "!toolbox_choice!"=="6" goto event_logs
+if "!toolbox_choice!"=="7" goto ssd_trim
+if "!toolbox_choice!"=="8" exit
 goto main_menu
 
 :cleanup
@@ -49,6 +57,9 @@ echo All operations are being logged to:
 echo !LOGFILE!
 echo ===============================================
 echo.
+echo Calculating current free space...
+for /f "usebackq" %%a in (`powershell -Command "[math]::Round((Get-CimInstance Win32_LogicalDisk -Filter \"DeviceID='%SYSTEMDRIVE%'\").FreeSpace / 1MB)"`) do set "free_before_mb=%%a"
+
 echo [1/4] Stopping background services...
 echo [1/4] Stopping background services... >> "!LOGFILE!"
 
@@ -104,10 +115,6 @@ echo.
 echo [4/4] Finalizing optimizations...
 echo [4/4] Finalizing optimizations... >> "!LOGFILE!"
 
-echo - Flushing DNS Resolver Cache...
-echo - Flushing DNS Resolver Cache... >> "!LOGFILE!"
-ipconfig /flushdns >> "!LOGFILE!" 2>&1
-
 echo - Starting Windows Update (wuauserv)...
 echo - Starting Windows Update (wuauserv)... >> "!LOGFILE!"
 net start wuauserv >> "!LOGFILE!" 2>&1
@@ -116,9 +123,118 @@ echo - Starting Background Intelligent Transfer Service (bits)...
 echo - Starting Background Intelligent Transfer Service (bits)... >> "!LOGFILE!"
 net start bits >> "!LOGFILE!" 2>&1
 
+for /f "usebackq" %%a in (`powershell -Command "[math]::Round((Get-CimInstance Win32_LogicalDisk -Filter \"DeviceID='%SYSTEMDRIVE%'\").FreeSpace / 1MB)"`) do set "free_after_mb=%%a"
+set /a "space_saved_mb=free_after_mb - free_before_mb"
+if !space_saved_mb! LSS 0 set "space_saved_mb=0"
+
 echo.
 echo SYSTEM CLEAN UP COMPLETE!
 echo SYSTEM CLEAN UP COMPLETE! >> "!LOGFILE!"
+echo -^> Total Space Freed: !space_saved_mb! MB
+echo -^> Total Space Freed: !space_saved_mb! MB >> "!LOGFILE!"
+pause
+goto main_menu
+
+:sys_repair
+cls
+echo ===============================================
+echo        SYSTEM INTEGRITY REPAIR (SFC + DISM)
+echo ===============================================
+echo WARNING: This process can take 15-45 minutes.
+echo -^> It CAN be safely interrupted by closing the window.
+echo -^> However, it is recommended to let it finish.
+echo ===============================================
+set /p confirm="Do you want to proceed? (Y/N): "
+if /i "!confirm!" NEQ "Y" goto main_menu
+
+echo.
+echo [1/2] Running System File Checker (SFC)...
+echo Running SFC >> "!LOGFILE!"
+sfc /scannow >> "!LOGFILE!" 2>&1
+
+echo [2/2] Running DISM RestoreHealth...
+echo Running DISM RestoreHealth >> "!LOGFILE!"
+DISM /Online /Cleanup-Image /RestoreHealth >> "!LOGFILE!" 2>&1
+
+echo.
+echo SYSTEM INTEGRITY REPAIR COMPLETE!
+echo SYSTEM INTEGRITY REPAIR COMPLETE! >> "!LOGFILE!"
+pause
+goto main_menu
+
+:win_sxs
+cls
+echo ===============================================
+echo      WINDOWS COMPONENT STORE CLEANUP (WinSxS)
+echo ===============================================
+echo WARNING: This deeply cleans old Windows Update files.
+echo -^> It can take 10-30 minutes and may appear stuck.
+echo -^> DO NOT interrupt this process (can corrupt updates).
+echo ===============================================
+set /p confirm="Do you want to proceed? (Y/N): "
+if /i "!confirm!" NEQ "Y" goto main_menu
+
+echo.
+echo Cleaning Windows Component Store...
+echo Running WinSxS Cleanup >> "!LOGFILE!"
+DISM.exe /Online /Cleanup-Image /StartComponentCleanup >> "!LOGFILE!" 2>&1
+
+echo.
+echo WINSXS CLEANUP COMPLETE!
+echo WINSXS CLEANUP COMPLETE! >> "!LOGFILE!"
+pause
+goto main_menu
+
+:app_update
+cls
+echo ===============================================
+echo         UPDATE INSTALLED APPS (WINGET)
+echo ===============================================
+echo WARNING: Silently updates all apps installed via Winget.
+echo -^> May take several minutes.
+echo -^> It CAN be safely interrupted.
+echo ===============================================
+set /p confirm="Do you want to proceed? (Y/N): "
+if /i "!confirm!" NEQ "Y" goto main_menu
+
+echo.
+echo Upgrading all installed applications (this may take a while)...
+echo Running Winget Upgrade All >> "!LOGFILE!"
+winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements >> "!LOGFILE!" 2>&1
+
+echo.
+echo APP UPDATE COMPLETE!
+echo APP UPDATE COMPLETE! >> "!LOGFILE!"
+pause
+goto main_menu
+
+:net_reset
+cls
+echo ===============================================
+echo            COMPLETE NETWORK RESET
+echo ===============================================
+echo This will reset your network adapters to factory defaults.
+echo -^> A system restart will be required afterward.
+echo ===============================================
+set /p confirm="Do you want to proceed? (Y/N): "
+if /i "!confirm!" NEQ "Y" goto main_menu
+
+echo.
+echo Resetting Winsock...
+echo Resetting Winsock >> "!LOGFILE!"
+netsh winsock reset >> "!LOGFILE!" 2>&1
+
+echo Resetting TCP/IP...
+echo Resetting TCP/IP >> "!LOGFILE!"
+netsh int ip reset >> "!LOGFILE!" 2>&1
+
+echo Flushing DNS...
+echo Flushing DNS >> "!LOGFILE!"
+ipconfig /flushdns >> "!LOGFILE!" 2>&1
+
+echo.
+echo NETWORK RESET COMPLETE! Please RESTART your computer.
+echo NETWORK RESET COMPLETE! >> "!LOGFILE!"
 pause
 goto main_menu
 
@@ -139,8 +255,8 @@ for /F "tokens=*" %%G in ('wevtutil.exe el') DO (
     wevtutil.exe cl "%%G" >> "!LOGFILE!" 2>&1
 )
 echo.
-echo All Event Logs have been cleared!
-echo All Event Logs have been cleared! >> "!LOGFILE!"
+echo EVENT LOGS CLEARED!
+echo EVENT LOGS CLEARED! >> "!LOGFILE!"
 pause
 goto main_menu
 
@@ -175,8 +291,8 @@ del /q "%TEMP%\defrag_out.txt" >nul 2>&1
 
 echo.
 echo -----------------------------------------------
-echo Done.
-echo Done. >> "!LOGFILE!"
+echo SSD TRIM COMPLETE!
+echo SSD TRIM COMPLETE! >> "!LOGFILE!"
 echo [1] Return to Menu
 echo [2] Exit
 set /p final="Choose an option: "
