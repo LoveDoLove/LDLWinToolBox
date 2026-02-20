@@ -29,7 +29,14 @@ The TRIM module is optimized for NVMe architecture:
 - **Non-Destructive:** The script targets only temporary locations (`%Temp%`, `Prefetch`, logs) and does not interact with user libraries or system binaries.
 - **Input Sanitization:** The SSD module includes logic to clean user input (removing colons/spaces), preventing command execution errors.
 
-## 6. Project & Prompt Analysis
+## 6. Logging and Verbosity Control
+
+The script implements a dynamic verbose logging mechanism. Upon execution, it generates a timestamped log file (`LDLWinToolBox_yyMMddHHmmss.log`).
+
+- **User Experience (UX):** It displays clear, high-level, human-readable operations on the console (e.g., "Cleaning \Windows\Temp"), providing transparency without overwhelming the user with "scary" massive walls of file paths.
+- **Detailed Auditing:** The actual verbose output of all underlying commands (`del`, `rd`, `wevtutil`, `defrag`) is redirected and appended to the log file via `>> "!LOGFILE!" 2>&1`, ensuring complete historical records for troubleshooting.
+
+## 7. Project & Prompt Analysis
 
 ### Project Analysis
 
@@ -39,12 +46,13 @@ The LDLWinToolBox project is a standalone Windows Batch script (`LDLWinToolBox.b
 
 The existing `PROMPT_GUIDE.md` provides user-centric instructions on operating the batch script, while this `ANALYSIS.md` details the technical implementations and architectural choices. Both accurately reflect the current script's capabilities and align with the core requirements (batch standard, auto admin check).
 
-## 7. Rules to Apply for Next Time (Future Prompts)
+## 8. Rules to Apply for Next Time (Future Prompts)
 
 To ensure continuous improvement and maintain the integrity of the project during future prompting, apply the following rules:
 
 1. **Maintain Batch Standard:** Any new features or module additions must strictly use standard Windows Batch (`.bat`) commands. Utilize PowerShell one-liners only when native DOS commands lack the necessary functionality (e.g., UI prompts or advanced volume queries).
 2. **Preserve Auto-Admin:** Do not modify the existing dual-layer UAC elevation logic at the beginning of the script. All new operations must assume execution under elevated privileges.
 3. **Keep History Intact:** When requesting updates or new features, strictly mandate that all existing historical analysis and documentation in `ANALYSIS.md` and `PROMPT_GUIDE.md` be preserved.
-4. **Safety First Methodology:** Any destructive or system-altering commands must be scoped precisely and include silent execution flags (`>nul 2>&1` where appropriate) to avoid cluttering the CLI output, maintaining the clean menu experience.
+4. **Safety First Methodology:** Any destructive or system-altering commands must be scoped precisely to avoid cluttering the CLI output, maintaining the clean menu experience.
 5. **Input Validation:** Ensure input sanitization (e.g., removing spaces and colons as done in the SSD Trim module) is explicitly required for any new feature taking user input.
+6. **Logging Principle:** When executing batch commands, echo a clean, understandable summary to the console and redirect the verbose raw output (`>> "!LOGFILE!" 2>&1`) to the dynamic timestamped log file. Do NOT flood the console with raw data that might intimidate users.
