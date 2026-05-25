@@ -19,11 +19,14 @@ The script automatically checks for Administrator privileges.
 - **[5] Complete Network Reset:** Resets Winsock, TCP/IP, and DNS cache. Requires a system restart when finished.
 - **[6] Clear Event Viewer Logs:** Clears all system, security, and application logs into a clean state.
 - **[7] Manual SSD TRIM:** Queries your NVMe volumes via PowerShell and runs manual garbage collection on them. Type only the drive letter (e.g., `C`) when prompted.
+- **[8] Disable Bitlocker:** Disables Bitlocker encryption on all attached drives. Users should back up their recovery keys before proceeding. Decryption runs in background and may take several hours.
+- **[9] Kill Browser AI:** Executes a PowerShell script from a remote gist repository that terminates AI-related browser processes and extensions.
 
 ## 3. General User Actions
 
 - **Confirmations:** Whenever a tool mentions it will take a long time, type `Y` to continue or any other key to abort and return to the menu.
-- **Exiting the Tool:** Select Option `8` from the main menu or Option `2` from the TRIM sub-menu to safely close the application.
+- **Exiting the Tool:** Select Option `10` from the main menu or Option `2` from the TRIM sub-menu to safely close the application.
+- **Security Note for Bitlocker:** Before disabling Bitlocker, ensure you have your recovery key saved. Without it, you may lose access to encrypted data.
 
 ## 4. Rules for Better Prompts (Future Development)
 

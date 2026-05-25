@@ -185,9 +185,50 @@
 5. **清洁详细度控制** → 控制台显示摘要，详细日志入文件
 6. **长期进程处理** → 1 分钟以上的操作需提前警告和确认
 
+## 功能 8：禁用 Bitlocker (Disable Bitlocker)
+
+**菜单位置：** [8]  
+**主要操作：**
+- 使用 `manage-bde.exe -status` 显示当前 Bitlocker 状态
+- 循环遍历所有驱动器号（C-Z）
+- 使用 `manage-bde.exe -protectors -disable <drive>:` 移除加密保护
+- 解密过程在后台运行（可能耗时数小时）
+- 系统在解密期间保持完全可用
+
+**技术细节：**
+- 使用 Windows 原生 `manage-bde.exe` 工具
+- 支持多驱动器并发处理
+- 解密为异步操作，系统会在完成时通知用户
+
+**用户警告：**
+- 用户应在禁用前备份 Bitlocker 恢复密钥
+- 禁用 Bitlocker 会降低系统安全性
+- 需要管理员权限
+
 ---
 
-## 技能包库
+## 功能 9：清除浏览器 AI (Kill Browser AI)
+
+**菜单位置：** [9]  
+**主要操作：**
+- 从公开 GitHub gist 下载并执行 PowerShell 脚本
+- 脚本地址：`https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1`
+- 使用 PowerShell `iwr` + `iex` 快速执行
+- 所有输出记录到日志文件
+
+**技术细节：**
+- 利用远程 PowerShell 脚本以保持灵活性（gist 可独立更新）
+- 单行执行最小化本地代码复杂度
+- 输出重定向确保 CLI 清洁
+
+**功能说明：**
+- 终止与 AI 相关的浏览器进程和扩展
+- 可能关闭活跃的浏览器会话
+- 需要网络连接
+
+**安全考虑：**
+- 脚本来自可信的 GitHub gist 仓库
+- 建议在生产环境前验证 gist 内容
 
 ### 目录结构
 

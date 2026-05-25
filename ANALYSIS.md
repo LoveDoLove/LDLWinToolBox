@@ -40,7 +40,60 @@ The TRIM module is optimized for NVMe architecture:
 
 The LDLWinToolBox project is a standalone Windows Batch script (`LDLWinToolBox.bat`) that effectively combines administrative privileges checks, system garbage collection, script verifications, and SSD TRIM optimization into a single, cohesive menu-driven interface.
 
-## 7. Rules to Apply for Next Time (Future Prompts)
+## 7. New Features (v1.1)
+
+### Feature 8: Disable Bitlocker
+
+**Purpose:** Safely disable Bitlocker encryption on all attached drives.
+
+**Implementation Details:**
+- Uses `manage-bde.exe -status` to display current Bitlocker status
+- Iterates through all drive letters (C-Z) and attempts to disable Bitlocker on each
+- Uses `manage-bde.exe -protectors -disable <drive>:` to remove encryption protection
+- Decryption process runs in background (may take several hours)
+- System remains fully functional during decryption
+- All operations logged to `!LOGFILE!`
+
+**Safety Warnings:**
+- Users should back up their Bitlocker recovery keys before proceeding
+- Disabling Bitlocker reduces system security (unless other encryption is enabled)
+- Decryption happens asynchronously; users will be notified upon completion
+- Requires administrative privileges (auto-requested at startup)
+
+**User Interaction:**
+- Displays warning about security implications
+- Requires Y/N confirmation before proceeding
+- Shows status check results
+- Returns to main menu after initiation
+
+### Feature 9: Kill Browser AI
+
+**Purpose:** Terminate AI-related browser processes and extensions from a trusted remote script.
+
+**Implementation Details:**
+- Downloads and executes a PowerShell script from a public GitHub gist
+- Script URL: `https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1`
+- Uses PowerShell `iwr` (Invoke-WebRequest) with `-useb` flag for HTTPS
+- Pipes script directly to `iex` (Invoke-Expression) for execution
+- All outputs logged to `!LOGFILE!`
+
+**Technical Approach:**
+- Leverages remote PowerShell script to maintain flexibility (gist can be updated independently)
+- Single line execution minimizes local code complexity
+- Output redirection ensures no stray messages in CLI
+
+**User Interaction:**
+- Displays warning that browser AI processes will be terminated
+- Notes that active browser sessions may close
+- Requires Y/N confirmation before execution
+- Logs execution results for troubleshooting
+
+**Security Considerations:**
+- Script comes from trusted GitHub gist repository
+- Consider verifying gist content before first use in production
+- Requires network connectivity to execute
+
+## 8. Rules to Apply for Next Time (Future Prompts)
 
 To ensure continuous improvement and maintain the integrity of the project during future prompting, apply the following rules:
 

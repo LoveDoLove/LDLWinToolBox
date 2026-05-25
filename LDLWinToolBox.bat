@@ -34,7 +34,9 @@ echo [4] Update All Installed Apps (Winget)
 echo [5] Complete Network Reset
 echo [6] Clear Event Viewer Logs
 echo [7] Manual SSD TRIM (Optimized for KC3000)
-echo [8] Exit
+echo [8] Disable Bitlocker
+echo [9] Kill Browser AI
+echo [10] Exit
 echo ===============================================
 set /p toolbox_choice="Select an option: "
 
@@ -45,7 +47,9 @@ if "!toolbox_choice!"=="4" goto app_update
 if "!toolbox_choice!"=="5" goto net_reset
 if "!toolbox_choice!"=="6" goto event_logs
 if "!toolbox_choice!"=="7" goto ssd_trim
-if "!toolbox_choice!"=="8" exit
+if "!toolbox_choice!"=="8" goto bitlocker_disable
+if "!toolbox_choice!"=="9" goto kill_browser_ai
+if "!toolbox_choice!"=="10" exit
 goto main_menu
 
 :cleanup
@@ -298,3 +302,64 @@ echo [2] Exit
 set /p final="Choose an option: "
 if "!final!"=="1" goto main_menu
 exit
+
+:bitlocker_disable
+cls
+echo ===============================================
+echo           DISABLE BITLOCKER
+echo ===============================================
+echo WARNING: Disabling Bitlocker may affect system security.
+echo -^> Make sure you have your recovery key saved!
+echo -^> After disabling, you may need to restart.
+echo ===============================================
+echo.
+echo Checking Bitlocker status...
+echo Checking Bitlocker Status >> "!LOGFILE!"
+manage-bde.exe -status >> "!LOGFILE!" 2>&1
+echo.
+
+set /p confirm="Do you want to DISABLE Bitlocker? (Y/N): "
+if /i "!confirm!" NEQ "Y" goto main_menu
+
+echo.
+echo Disabling Bitlocker on all drives...
+echo Running Bitlocker Disable >> "!LOGFILE!"
+
+for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+    echo Attempting to disable Bitlocker on %%d: ... >> "!LOGFILE!"
+    manage-bde.exe -protectors -disable %%d: >> "!LOGFILE!" 2>&1
+)
+
+echo.
+echo BITLOCKER DISABLE INITIATED!
+echo BITLOCKER DISABLE INITIATED! >> "!LOGFILE!"
+echo NOTE: Bitlocker decryption is in progress (may take hours).
+echo -^> Your system will remain fully functional during this time.
+echo -^> You will receive a notification when decryption is complete.
+pause
+goto main_menu
+
+:kill_browser_ai
+cls
+echo ===============================================
+echo           KILL BROWSER AI
+echo ===============================================
+echo WARNING: This will terminate AI-related browser processes.
+echo -^> Running PowerShell script from gist repository.
+echo -^> This may close your active browser sessions.
+echo ===============================================
+echo.
+
+set /p confirm="Do you want to proceed? (Y/N): "
+if /i "!confirm!" NEQ "Y" goto main_menu
+
+echo.
+echo Executing Kill Browser AI script...
+echo Running Kill Browser AI Script >> "!LOGFILE!"
+powershell -Command "iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex" >> "!LOGFILE!" 2>&1
+
+echo.
+echo KILL BROWSER AI COMPLETE!
+echo KILL BROWSER AI COMPLETE! >> "!LOGFILE!"
+pause
+goto main_menu
