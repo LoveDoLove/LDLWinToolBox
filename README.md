@@ -62,7 +62,7 @@
 
 The LDL Windows ToolBox is a standalone Windows Batch script (`LDLWinToolBox.bat`) that effectively combines administrative privileges checks, system garbage collection, script verifications, network reset, BitLocker decryption planning, browser AI cleanup, and SSD TRIM optimization into a single, cohesive menu-driven interface.
 
-It safely automates otherwise tedious system administration tasks while maintaining comprehensive, timestamped logs (`LDLWinToolBox_yyMMddHHmmss.log`) of all actions to ensure complete historical records and safety.
+It safely automates otherwise tedious system administration tasks while maintaining comprehensive, timestamped logs (`logs\LDLWinToolBox_yyMMddHHmmss.log`) of all actions to ensure complete historical records and safety.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -98,7 +98,7 @@ To get a local copy up and running follow these simple steps.
 
 ## Usage
 
-Upon launching, the interactive menu provides numerical options (1-10) to execute tools:
+Upon launching, the interactive menu provides numerical options (1-11) to execute tools:
 
 - **[1] Advanced System Cleanup**: Deeply cleans temporary system data, calculates Space Freed (MB).
 - **[2] System Integrity Repair**: Executes `SFC` and `DISM` to scan and repair corrupt OS files.
@@ -109,7 +109,10 @@ Upon launching, the interactive menu provides numerical options (1-10) to execut
 - **[7] Manual SSD TRIM**: Optimized for NVMe drives, triggers manual SSD re-trim using Windows defrag.
 - **[8] Disable BitLocker (Plan)**: Shows BitLocker status, validates a selected drive letter, then starts `manage-bde -off` only after typing `DISABLE`.
 - **[9] Kill Browser AI**: Runs the configured remote PowerShell cleanup command only after typing `KILL`.
-- **[10] Exit**: Closes the toolbox.
+- **[10] View Log History**: Lists recent toolbox logs and opens the selected log with paged console viewing.
+- **[11] Exit**: Closes the toolbox.
+
+Each run writes a structured log under `logs\` with a session header, environment summary, section markers, user cancellations, command start/end markers, and exit codes for key system commands. The Log History viewer shows the newest logs first and does not delete or modify old log files.
 
 _For AI maintenance context and persistent project rules, please refer to [AGENTS.md](AGENTS.md), [MEMORY.md](MEMORY.md), and [memory/tasks.md](memory/tasks.md)._
 

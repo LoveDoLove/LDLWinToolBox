@@ -31,8 +31,9 @@ On every new session:
 - Main executable: `LDLWinToolBox.bat`.
 - Keep the app menu-driven and suitable for Windows 10/11.
 - The script must auto-check Administrator permission and auto-request elevation with UAC before system-level operations.
-- Preserve timestamped logging with `LDLWinToolBox_yyMMddHHmmss.log`.
+- Preserve timestamped structured logging under `logs\LDLWinToolBox_yyMMddHHmmss.log`.
 - Console output should stay concise and user-readable; raw command output should go to `!LOGFILE!`.
+- Logs should include a session header, feature sections, user cancellation notes, command start/end markers, and exit codes for key system commands.
 - Long-running or risky operations must warn the user, explain interrupt safety, and ask for `(Y/N)` confirmation.
 - Sanitize user input for every new menu feature that accepts values.
 - Keep existing documentation and analysis history intact. If `ANALYSIS.md` or `PROMPT_GUIDE.md` exists, append updates instead of replacing historical context.
@@ -51,7 +52,8 @@ Current `LDLWinToolBox.bat` menu implementation:
 8. Disable BitLocker `(Plan)` using `manage-bde -status` and guarded `manage-bde -off <drive>:`.
 9. Kill Browser AI using the user-specified command:
   `iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex`
-10. Exit.
+10. View Log History using a read-only paged console viewer for recent `logs\LDLWinToolBox_*.log` files.
+11. Exit.
 
 Remote script execution is high risk. Do not run this command during development. If it is implemented as a menu feature, add an explicit warning and confirmation before execution.
 

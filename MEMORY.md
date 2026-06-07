@@ -27,7 +27,16 @@ Last updated: 2026-06-07
 
 ## Current Repository Logic
 
-`LDLWinToolBox.bat` is a standalone menu-driven Windows Batch script. It initializes delayed expansion, checks for Administrator access, relaunches with UAC through PowerShell `Start-Process -Verb RunAs` when needed, switches to the script directory, and creates a timestamped log file named `LDLWinToolBox_yyMMddHHmmss.log`.
+`LDLWinToolBox.bat` is a standalone menu-driven Windows Batch script. It initializes delayed expansion, checks for Administrator access, relaunches with UAC through PowerShell `Start-Process -Verb RunAs` when needed, switches to the script directory, and creates a timestamped structured log file named `logs\LDLWinToolBox_yyMMddHHmmss.log`.
+
+Logging behavior:
+
+- Creates `logs\` automatically and falls back to the script directory if the log directory cannot be created.
+- Writes a session header with script path, working directory, user, computer, OS, system root, temp path, and log path.
+- Uses helper labels for `INFO`, `WARN`, `ERROR`, `CMD`, and `OK` log entries.
+- Records feature section boundaries, menu selections, user cancellations, key command starts, command exit codes, and major completion messages.
+- Keeps raw command output in the same log file while keeping console output concise.
+- Provides a read-only Log History viewer that lists recent logs newest-first and opens a selected file with `more`.
 
 Implemented menu behavior:
 
@@ -40,7 +49,8 @@ Implemented menu behavior:
 7. Manual SSD TRIM: lists volumes with PowerShell `Get-Volume`, sanitizes and validates a single drive letter, confirms the drive exists, runs `defrag <drive>: /L /V`, displays output, and appends it to the log.
 8. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
 9. Kill Browser AI: warns that it downloads and executes a remote PowerShell script, requires typing `KILL`, then runs the configured gist command and logs the result.
-10. Exit: closes the tool.
+10. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
+11. Exit: closes the tool.
 
 ## Implemented Feature Targets
 
@@ -74,7 +84,7 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - Preserve the app as a single-file Windows Batch tool unless the user explicitly asks for a different architecture.
 - Prefer native Windows commands and Batch syntax for implementation.
 - Keep PowerShell calls minimal, one-line, and justified by Windows capability gaps.
-- Preserve auto-admin behavior and timestamped logs.
+- Preserve auto-admin behavior and structured timestamped logs under `logs\`.
 - Keep console messages readable and route verbose command output into the log.
 - Add `(Y/N)` confirmation for long-running, destructive, privacy-affecting, or remote-execution operations.
 - Keep prompt/history updates append-friendly and date-stamped.
