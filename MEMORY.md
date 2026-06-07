@@ -19,7 +19,8 @@ Last updated: 2026-06-07
 - Current branch at scan time: `lovedolove`
 - License: Apache License 2.0
 - Primary executable: `LDLWinToolBox.bat`
-- Primary docs: `README.md`, `ANALYSIS.md`, `PROMPT_GUIDE.md`
+- Primary docs: `README.md`, `AGENTS.md`, `MEMORY.md`, `memory/tasks.md`
+- Prompt/history docs observed as absent at the latest scan: `ANALYSIS.md`, `PROMPT_GUIDE.md`
 - GitHub metadata: `.github/FUNDING.yml`, `.github/ISSUE_TEMPLATE/bug-report---.md`, `.github/ISSUE_TEMPLATE/feature-request---.md`
 - Asset: `images/logo.png`
 - Ignored local template observed: `BLANK_README.md`
@@ -36,32 +37,35 @@ Implemented menu behavior:
 4. Update All Installed Apps: asks confirmation, runs `winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements`.
 5. Complete Network Reset: asks confirmation, runs `netsh winsock reset`, `netsh int ip reset`, and `ipconfig /flushdns`; tells user to restart.
 6. Clear Event Viewer Logs: enumerates all logs with `wevtutil.exe el` and clears each one with `wevtutil.exe cl`.
-7. Manual SSD TRIM: lists volumes with PowerShell `Get-Volume`, sanitizes the entered drive letter, runs `defrag <drive>: /L /V`, displays output, and appends it to the log.
-8. Exit: closes the tool.
+7. Manual SSD TRIM: lists volumes with PowerShell `Get-Volume`, sanitizes and validates a single drive letter, confirms the drive exists, runs `defrag <drive>: /L /V`, displays output, and appends it to the log.
+8. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
+9. Kill Browser AI: warns that it downloads and executes a remote PowerShell script, requires typing `KILL`, then runs the configured gist command and logs the result.
+10. Exit: closes the tool.
 
-## Declared Feature Targets
+## Implemented Feature Targets
 
-The user listed these as available or planned feature targets, but the current scanned `LDLWinToolBox.bat` implementation does not yet expose them as tools:
+The user-listed feature targets below were implemented in `LDLWinToolBox.bat` on 2026-06-07:
 
-- Disable BitLocker `[Plan]`.
+- Disable BitLocker `[Plan]` with status display, drive validation, and `DISABLE` confirmation.
 - Kill Browser AI using:
   `iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex`
 
-Treat the remote `iwr | iex` command as high risk. Do not execute it during analysis. If implemented later, add a clear warning, confirmation prompt, and logging.
+Treat the remote `iwr | iex` command as high risk. Do not execute it during analysis. The menu feature requires a clear warning, `KILL` confirmation, and logging.
 
 ## Documentation And Prompt Files
 
 - `README.md` describes the app, prerequisites, installation, usage, license, and contact info.
-- `ANALYSIS.md` records technical analysis and future prompt rules.
-- `PROMPT_GUIDE.md` explains how users should launch, select menu options, and prompt AI for future changes.
+- `AGENTS.md` records AI working rules, startup order, project rules, and current feature inventory.
+- `MEMORY.md` records long-term user preferences, repository facts, current logic, risks, and persistent rules.
+- `memory/tasks.md` tracks cross-session work.
+- `ANALYSIS.md` and `PROMPT_GUIDE.md` were not present in the latest working tree scan; if restored later, preserve their history and append updates.
 - Existing prompt rules emphasize Batch standard, auto-admin preservation, history preservation, input sanitization, clean verbosity, and long-running process warnings.
 
 ## Known Gaps And Risks
 
-- Current README says options `1-8` execute tools, but option `8` is currently `Exit`.
-- User-declared feature targets `Disable BitLocker` and `Kill Browser AI` are not implemented in the scanned script.
-- The current admin-check path in `LDLWinToolBox.bat` should be reviewed before future releases because the line includes `system32%` in the protected path.
-- Cleanup deletes Event Viewer log files directly and option 6 also clears logs through `wevtutil`; future changes should keep this behavior intentional and clearly documented.
+- The admin-check path issue was fixed by replacing the typo-prone `cacls` path check with `fltmc`.
+- Cleanup no longer deletes Event Viewer log files directly; option 6 remains the safe `wevtutil` path for clearing logs.
+- The Kill Browser AI gist content could not be verified from the local environment during implementation; keep the `KILL` confirmation and source warning.
 - `BLANK_README.md` is present locally but ignored by git and appears to be an unused Best-README-Template source file.
 - No tracked `.agents/skills/` directory exists at the 2026-06-07 scan; any future repo-local skill installation must clone a public GitHub source and record provenance.
 
@@ -74,4 +78,3 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - Keep console messages readable and route verbose command output into the log.
 - Add `(Y/N)` confirmation for long-running, destructive, privacy-affecting, or remote-execution operations.
 - Keep prompt/history updates append-friendly and date-stamped.
-

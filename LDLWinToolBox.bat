@@ -2,10 +2,10 @@
 setlocal EnableDelayedExpansion
 
 :: --- AUTO ADMIN REQUEST ---
->nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32%\config\system"
-if '%errorlevel%' NEQ '0' (
+fltmc >nul 2>&1
+if errorlevel 1 (
     echo Requesting administrative privileges...
-    powershell -Command "Start-Process -FilePath '%0' -Verb RunAs"
+    powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
     exit /B
 )
 pushd "%CD%"
@@ -34,7 +34,9 @@ echo [4] Update All Installed Apps (Winget)
 echo [5] Complete Network Reset
 echo [6] Clear Event Viewer Logs
 echo [7] Manual SSD TRIM (Optimized for KC3000)
-echo [8] Exit
+echo [8] Disable BitLocker (Plan)
+echo [9] Kill Browser AI
+echo [10] Exit
 echo ===============================================
 set /p toolbox_choice="Select an option: "
 
@@ -45,7 +47,9 @@ if "!toolbox_choice!"=="4" goto app_update
 if "!toolbox_choice!"=="5" goto net_reset
 if "!toolbox_choice!"=="6" goto event_logs
 if "!toolbox_choice!"=="7" goto ssd_trim
-if "!toolbox_choice!"=="8" exit
+if "!toolbox_choice!"=="8" goto bitlocker_disable
+if "!toolbox_choice!"=="9" goto kill_browser_ai
+if "!toolbox_choice!"=="10" exit
 goto main_menu
 
 :cleanup
@@ -82,12 +86,14 @@ for %%f in (
     "%AppData%\Temp\*.*"
     "%LocalAppdata%\Temp\*.*"
     "%WinDir%\SoftwareDistribution\Download\*.*"
-    "%WinDir%\System32\winevt\Logs\*.*"
 ) do (
     echo - Cleaning %%~f
     echo - Cleaning %%~f >> "!LOGFILE!"
     del /s /f /q "%%~f" >> "!LOGFILE!" 2>&1
 )
+
+echo - Event Viewer logs are handled by menu option 6 using wevtutil.
+echo - Event Viewer logs are handled by menu option 6 using wevtutil. >> "!LOGFILE!"
 
 for %%d in (
     "%SYSTEMDRIVE%\AMD"
@@ -272,12 +278,17 @@ echo.
 echo Current Drives Connected:
 powershell -Command "Get-Volume | Where-Object { $_.DriveLetter -ne $null } | Select-Object @{Name='Drive';Expression={$_.DriveLetter + ':'}}, FileSystemLabel, @{Name='Size(GB)';Expression={[math]::round($_.Size / 1GB, 2)}} | ft -AutoSize"
 echo.
-set trim_drive=
-set /p trim_drive="Enter Drive Letter to TRIM (e.g. C): "
-if "!trim_drive!"=="" goto main_menu
-set trim_drive=!trim_drive::=!
-set trim_drive=!trim_drive: =!
-if "!trim_drive!"=="" goto main_menu
+choice /c 0ABCDEFGHIJKLMNOPQRSTUVWXYZ /n /m "Press 0 to return, or drive letter to TRIM (A-Z): "
+set "drive_choice=!errorlevel!"
+if "!drive_choice!"=="1" goto main_menu
+call :set_drive_from_choice !drive_choice!
+set "trim_drive=!selected_drive!"
+if not exist "!trim_drive!:\" (
+    echo Drive !trim_drive!: was not found.
+    echo TRIM drive not found: !trim_drive!: >> "!LOGFILE!"
+    pause
+    goto main_menu
+)
 
 echo.
 echo -----------------------------------------------
@@ -298,3 +309,133 @@ echo [2] Exit
 set /p final="Choose an option: "
 if "!final!"=="1" goto main_menu
 exit
+
+:bitlocker_disable
+cls
+echo ===============================================
+echo          DISABLE BITLOCKER (PLAN)
+echo ===============================================
+echo WARNING: This starts BitLocker decryption for the
+echo selected drive and turns BitLocker off.
+echo -^> Decryption can take a long time.
+echo -^> Keep the PC powered on until Windows finishes.
+echo -^> Do this only when protection is no longer needed.
+echo ===============================================
+echo.
+where manage-bde.exe >nul 2>&1
+if errorlevel 1 (
+    echo manage-bde.exe was not found on this system.
+    echo manage-bde.exe was not found. >> "!LOGFILE!"
+    pause
+    goto main_menu
+)
+
+echo Current BitLocker status:
+echo Current BitLocker status: >> "!LOGFILE!"
+manage-bde -status
+manage-bde -status >> "!LOGFILE!" 2>&1
+echo.
+choice /c 0ABCDEFGHIJKLMNOPQRSTUVWXYZ /n /m "Press 0 to return, or drive letter to disable BitLocker (A-Z): "
+set "drive_choice=!errorlevel!"
+if "!drive_choice!"=="1" goto main_menu
+call :set_drive_from_choice !drive_choice!
+set "bitlocker_drive=!selected_drive!"
+if not exist "!bitlocker_drive!:\" (
+    echo Drive !bitlocker_drive!: was not found.
+    echo BitLocker drive not found: !bitlocker_drive!: >> "!LOGFILE!"
+    pause
+    goto main_menu
+)
+
+echo.
+echo Selected drive status:
+echo Selected BitLocker drive status for !bitlocker_drive!: >> "!LOGFILE!"
+manage-bde -status !bitlocker_drive!:
+manage-bde -status !bitlocker_drive!: >> "!LOGFILE!" 2>&1
+echo.
+set confirm=
+set /p confirm="Type DISABLE to start decryption for !bitlocker_drive!: "
+if /i "!confirm!" NEQ "DISABLE" goto main_menu
+
+echo.
+echo Starting BitLocker decryption on !bitlocker_drive!: ...
+echo Starting BitLocker decryption on !bitlocker_drive!: >> "!LOGFILE!"
+manage-bde -off !bitlocker_drive!: >> "!LOGFILE!" 2>&1
+if errorlevel 1 (
+    echo BITLOCKER DISABLE FAILED. Check !LOGFILE!.
+    echo BITLOCKER DISABLE FAILED. >> "!LOGFILE!"
+) else (
+    echo BITLOCKER DECRYPTION STARTED. Check Windows BitLocker status for progress.
+    echo BITLOCKER DECRYPTION STARTED. >> "!LOGFILE!"
+)
+
+echo.
+echo Updated status:
+echo Updated BitLocker status for !bitlocker_drive!: >> "!LOGFILE!"
+manage-bde -status !bitlocker_drive!:
+manage-bde -status !bitlocker_drive!: >> "!LOGFILE!" 2>&1
+pause
+goto main_menu
+
+:set_drive_from_choice
+set "selected_drive="
+if "%~1"=="2" set "selected_drive=A"
+if "%~1"=="3" set "selected_drive=B"
+if "%~1"=="4" set "selected_drive=C"
+if "%~1"=="5" set "selected_drive=D"
+if "%~1"=="6" set "selected_drive=E"
+if "%~1"=="7" set "selected_drive=F"
+if "%~1"=="8" set "selected_drive=G"
+if "%~1"=="9" set "selected_drive=H"
+if "%~1"=="10" set "selected_drive=I"
+if "%~1"=="11" set "selected_drive=J"
+if "%~1"=="12" set "selected_drive=K"
+if "%~1"=="13" set "selected_drive=L"
+if "%~1"=="14" set "selected_drive=M"
+if "%~1"=="15" set "selected_drive=N"
+if "%~1"=="16" set "selected_drive=O"
+if "%~1"=="17" set "selected_drive=P"
+if "%~1"=="18" set "selected_drive=Q"
+if "%~1"=="19" set "selected_drive=R"
+if "%~1"=="20" set "selected_drive=S"
+if "%~1"=="21" set "selected_drive=T"
+if "%~1"=="22" set "selected_drive=U"
+if "%~1"=="23" set "selected_drive=V"
+if "%~1"=="24" set "selected_drive=W"
+if "%~1"=="25" set "selected_drive=X"
+if "%~1"=="26" set "selected_drive=Y"
+if "%~1"=="27" set "selected_drive=Z"
+exit /b
+
+:kill_browser_ai
+cls
+echo ===============================================
+echo              KILL BROWSER AI
+echo ===============================================
+echo WARNING: This downloads and executes a remote
+echo PowerShell script from the configured gist URL.
+echo -^> It may close browser or AI-related processes.
+echo -^> Network access is required.
+echo -^> Do not run if you do not trust the source.
+echo ===============================================
+echo.
+echo Source:
+echo https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1
+echo.
+set confirm=
+set /p confirm="Type KILL to run Kill Browser AI: "
+if /i "!confirm!" NEQ "KILL" goto main_menu
+
+echo.
+echo Running Kill Browser AI...
+echo Running Kill Browser AI remote script. >> "!LOGFILE!"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "try { iwr -useb 'https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1' | iex; exit 0 } catch { Write-Error $_; exit 1 }" >> "!LOGFILE!" 2>&1
+if errorlevel 1 (
+    echo KILL BROWSER AI FAILED. Check !LOGFILE!.
+    echo KILL BROWSER AI FAILED. >> "!LOGFILE!"
+) else (
+    echo KILL BROWSER AI COMPLETE.
+    echo KILL BROWSER AI COMPLETE. >> "!LOGFILE!"
+)
+pause
+goto main_menu

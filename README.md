@@ -18,7 +18,7 @@
 <h3 align="center">LDL Windows ToolBox</h3>
 
   <p align="center">
-    A cohesive, menu-driven Windows Batch utility that safely automates advanced system cleanup, integrity repair, components update, and NVMe SSD optimizations.
+    A cohesive, menu-driven Windows Batch utility that safely automates advanced system cleanup, integrity repair, component updates, network repair, BitLocker decryption planning, browser AI cleanup, and NVMe SSD optimizations.
     <br />
     <a href="https://github.com/LoveDoLove/LDLWinToolBox"><strong>Explore the docs »</strong></a>
     <br />
@@ -60,7 +60,7 @@
 
 ## About The Project
 
-The LDL Windows ToolBox is a standalone Windows Batch script (`LDLWinToolBox.bat`) that effectively combines administrative privileges checks, system garbage collection, script verifications, and SSD TRIM optimization into a single, cohesive menu-driven interface.
+The LDL Windows ToolBox is a standalone Windows Batch script (`LDLWinToolBox.bat`) that effectively combines administrative privileges checks, system garbage collection, script verifications, network reset, BitLocker decryption planning, browser AI cleanup, and SSD TRIM optimization into a single, cohesive menu-driven interface.
 
 It safely automates otherwise tedious system administration tasks while maintaining comprehensive, timestamped logs (`LDLWinToolBox_yyMMddHHmmss.log`) of all actions to ensure complete historical records and safety.
 
@@ -98,7 +98,7 @@ To get a local copy up and running follow these simple steps.
 
 ## Usage
 
-Upon launching, the interactive menu provides numerical options (1-8) to execute tools:
+Upon launching, the interactive menu provides numerical options (1-10) to execute tools:
 
 - **[1] Advanced System Cleanup**: Deeply cleans temporary system data, calculates Space Freed (MB).
 - **[2] System Integrity Repair**: Executes `SFC` and `DISM` to scan and repair corrupt OS files.
@@ -107,8 +107,11 @@ Upon launching, the interactive menu provides numerical options (1-8) to execute
 - **[5] Complete Network Reset**: Resets Winsock, TCP/IP, and DNS cache entirely.
 - **[6] Clear Event Viewer Logs**: Flushes system, security, and application logs.
 - **[7] Manual SSD TRIM**: Optimized for NVMe drives, triggers manual SSD re-trim using Windows defrag.
+- **[8] Disable BitLocker (Plan)**: Shows BitLocker status, validates a selected drive letter, then starts `manage-bde -off` only after typing `DISABLE`.
+- **[9] Kill Browser AI**: Runs the configured remote PowerShell cleanup command only after typing `KILL`.
+- **[10] Exit**: Closes the toolbox.
 
-_For more detailed background checks on each process, please refer to [ANALYSIS.md](ANALYSIS.md) and [PROMPT_GUIDE.md](PROMPT_GUIDE.md)_
+_For AI maintenance context and persistent project rules, please refer to [AGENTS.md](AGENTS.md), [MEMORY.md](MEMORY.md), and [memory/tasks.md](memory/tasks.md)._
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

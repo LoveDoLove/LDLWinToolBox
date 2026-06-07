@@ -14,7 +14,7 @@ On every new session:
 
 1. Read `AGENTS.md` and `MEMORY.md`.
 2. Analyze the project source and repository structure first, especially `LDLWinToolBox.bat`, `README.md`, `.github/`, and tracked metadata.
-3. Only after project analysis, analyze prompt/history files: `ANALYSIS.md`, `PROMPT_GUIDE.md`, `memory/tasks.md`, and `memory/YYYY-MM-DD.md` if present.
+3. Only after project analysis, analyze prompt/history files if present: `ANALYSIS.md`, `PROMPT_GUIDE.md`, `memory/tasks.md`, and `memory/YYYY-MM-DD.md`.
 4. Continue from the stored rules and tasks while keeping prior history intact.
 5. When updating history, append dated notes or update status clearly; do not delete older decisions unless the user explicitly requests cleanup.
 
@@ -35,7 +35,7 @@ On every new session:
 - Console output should stay concise and user-readable; raw command output should go to `!LOGFILE!`.
 - Long-running or risky operations must warn the user, explain interrupt safety, and ask for `(Y/N)` confirmation.
 - Sanitize user input for every new menu feature that accepts values.
-- Keep existing documentation and analysis history in `ANALYSIS.md` and `PROMPT_GUIDE.md`; append updates instead of replacing historical context.
+- Keep existing documentation and analysis history intact. If `ANALYSIS.md` or `PROMPT_GUIDE.md` exists, append updates instead of replacing historical context.
 
 ## Current Implemented Features
 
@@ -48,13 +48,10 @@ Current `LDLWinToolBox.bat` menu implementation:
 5. Complete Network Reset using Winsock, TCP/IP reset, and DNS flush.
 6. Clear Event Viewer Logs using `wevtutil`.
 7. Manual SSD TRIM using `defrag /L /V`.
-8. Exit.
-
-Declared future or user-requested feature targets:
-
-- Disable BitLocker `[Plan]`.
-- Kill Browser AI using the user-specified command:
+8. Disable BitLocker `(Plan)` using `manage-bde -status` and guarded `manage-bde -off <drive>:`.
+9. Kill Browser AI using the user-specified command:
   `iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex`
+10. Exit.
 
 Remote script execution is high risk. Do not run this command during development. If it is implemented as a menu feature, add an explicit warning and confirmation before execution.
 
@@ -71,4 +68,3 @@ Remote script execution is high risk. Do not run this command during development
 - `MEMORY.md`: long-term user preferences, project goals, stable constraints, and project snapshot.
 - `memory/tasks.md`: cross-session todo and progress.
 - `memory/YYYY-MM-DD.md`: daily AI work log, decisions, and notes.
-
