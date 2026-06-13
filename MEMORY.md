@@ -93,3 +93,4 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - Add `(Y/N)` confirmation for long-running, destructive, privacy-affecting, or remote-execution operations.
 - Keep prompt/history updates append-friendly and date-stamped.
 - Keep future enhancement ideas in `memory/feature-ideas.md` so they can be reread and prioritized later.
+- Treat the `Suggested Priority Order` section in `memory/feature-ideas.md` as the default implementation roadmap until the user asks to reorder it.

@@ -6,6 +6,7 @@ Last updated: 2026-06-13
 
 - No open items.
 - Future enhancement ideas are now tracked in `memory/feature-ideas.md`.
+- The `Suggested Priority Order` in `memory/feature-ideas.md` is the default roadmap for the next optimization pass.
 
 ## Completed
 
