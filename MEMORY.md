@@ -1,6 +1,6 @@
 # MEMORY.md
 
-Last updated: 2026-06-07
+Last updated: 2026-06-13
 
 ## User Preferences
 
@@ -17,6 +17,7 @@ Last updated: 2026-06-07
 - Repository path: `D:\Projects\WinProjects\LDLWinToolBox`
 - Git remote: `https://github.com/LoveDoLove/LDLWinToolBox.git`
 - Current branch at scan time: `lovedolove`
+- Latest scanned commit: `816135b Merge branch 'main' into lovedolove`
 - License: Apache License 2.0
 - Primary executable: `LDLWinToolBox.bat`
 - Primary docs: `README.md`, `AGENTS.md`, `MEMORY.md`, `memory/tasks.md`
@@ -24,6 +25,7 @@ Last updated: 2026-06-07
 - GitHub metadata: `.github/FUNDING.yml`, `.github/ISSUE_TEMPLATE/bug-report---.md`, `.github/ISSUE_TEMPLATE/feature-request---.md`
 - Asset: `images/logo.png`
 - Ignored local template observed: `BLANK_README.md`
+- Runtime logs observed under `logs\`; `*.log` is ignored by `.gitignore`.
 
 ## Current Repository Logic
 
@@ -40,7 +42,7 @@ Logging behavior:
 
 Implemented menu behavior:
 
-1. Advanced System Cleanup: calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads, Event Viewer log files, and root driver folders such as `AMD`, `NVIDIA`, and `INTEL`; rebuilds temp directories; restarts services; reports MB freed.
+1. Advanced System Cleanup: calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads, and root driver folders such as `AMD`, `NVIDIA`, and `INTEL`; rebuilds temp directories; restarts services; reports MB freed. Event Viewer logs are intentionally handled by option 6 instead of direct file deletion.
 2. System Integrity Repair: asks confirmation, runs `sfc /scannow`, then `DISM /Online /Cleanup-Image /RestoreHealth`.
 3. Windows Component Store Cleanup: asks confirmation, runs `DISM.exe /Online /Cleanup-Image /StartComponentCleanup`.
 4. Update All Installed Apps: asks confirmation, runs `winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements`.
@@ -76,8 +78,9 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - The admin-check path issue was fixed by replacing the typo-prone `cacls` path check with `fltmc`.
 - Cleanup no longer deletes Event Viewer log files directly; option 6 remains the safe `wevtutil` path for clearing logs.
 - The Kill Browser AI gist content could not be verified from the local environment during implementation; keep the `KILL` confirmation and source warning.
+- The remote `kill_ai.ps1` gist was later retrieved on 2026-06-13; it disables Chrome and Edge on-device AI by applying registry policy keys and locking the `OptGuideOnDeviceModel` folders, but it still remains high risk and must not be executed automatically during analysis.
 - `BLANK_README.md` is present locally but ignored by git and appears to be an unused Best-README-Template source file.
-- No tracked `.agents/skills/` directory exists at the 2026-06-07 scan; any future repo-local skill installation must clone a public GitHub source and record provenance.
+- No tracked `.agents/skills/` directory exists at the 2026-06-09 scan; any future repo-local skill installation must clone a public GitHub source and record provenance.
 
 ## Persistent Working Rules
 

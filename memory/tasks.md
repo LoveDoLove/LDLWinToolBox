@@ -1,11 +1,10 @@
 # memory/tasks.md
 
-Last updated: 2026-06-07
+Last updated: 2026-06-13
 
 ## Pending
 
-- [ ] Review the remote `kill_ai.ps1` gist source when it is reachable, and keep the `KILL` confirmation unless a trusted local implementation replaces it.
-- [ ] If repo-local skills are needed, clone public GitHub open-source skills into `.agents/skills/<skill-name>/` and record URL, commit or tag, and license.
+- No open items.
 
 ## Completed
 
@@ -17,3 +16,5 @@ Last updated: 2026-06-07
 - [x] 2026-06-07: Hardened SSD TRIM drive input validation and stopped direct Event Viewer log deletion from cleanup.
 - [x] 2026-06-07: Improved logging with `logs\`, session headers, log helper labels, feature sections, user cancellation records, command start/end markers, and exit codes.
 - [x] 2026-06-07: Added read-only `View Log History` menu option for recent `logs\LDLWinToolBox_*.log` files.
+- [x] 2026-06-09: Rescanned current repository logic and updated `AGENTS.md`, `MEMORY.md`, and memory history.
+- [x] 2026-06-13: Restored session state, rescanned repository facts, retrieved and reviewed the remote `kill_ai.ps1` gist source, and confirmed no repo-local skills were needed for current work.

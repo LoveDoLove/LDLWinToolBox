@@ -34,6 +34,7 @@ On every new session:
 - Preserve timestamped structured logging under `logs\LDLWinToolBox_yyMMddHHmmss.log`.
 - Console output should stay concise and user-readable; raw command output should go to `!LOGFILE!`.
 - Logs should include a session header, feature sections, user cancellation notes, command start/end markers, and exit codes for key system commands.
+- Runtime logs are ignored by git through the existing `*.log` ignore rule.
 - Long-running or risky operations must warn the user, explain interrupt safety, and ask for `(Y/N)` confirmation.
 - Sanitize user input for every new menu feature that accepts values.
 - Keep existing documentation and analysis history intact. If `ANALYSIS.md` or `PROMPT_GUIDE.md` exists, append updates instead of replacing historical context.
@@ -62,7 +63,7 @@ Remote script execution is high risk. Do not run this command during development
 - Before coding, reviewing, or refactoring, check for applicable local skills under `.agents/skills/`.
 - Repository-local skill packages must be cloned from public GitHub open-source skills. Do not hand-write custom skill packages in this repo.
 - For every installed repo-local skill, preserve upstream provenance: source URL, commit or tag, and license.
-- Current scan on 2026-06-07 found no tracked `.agents/skills/` directory in this repository.
+- Current scan on 2026-06-09 found no tracked `.agents/skills/` directory in this repository.
 - The session-level `karpathy-guidelines` skill exists outside this repo and may be used for disciplined coding behavior, but it is not currently a repo-local cloned skill asset.
 
 ## Memory Files
