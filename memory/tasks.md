@@ -5,6 +5,7 @@ Last updated: 2026-06-13
 ## Pending
 
 - No open items.
+- Future enhancement ideas are now tracked in `memory/feature-ideas.md`.
 
 ## Completed
 

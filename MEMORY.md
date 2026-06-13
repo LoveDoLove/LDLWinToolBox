@@ -21,6 +21,7 @@ Last updated: 2026-06-13
 - License: Apache License 2.0
 - Primary executable: `LDLWinToolBox.bat`
 - Primary docs: `README.md`, `AGENTS.md`, `MEMORY.md`, `memory/tasks.md`
+- Backlog notes: `memory/feature-ideas.md`
 - Prompt/history docs observed as absent at the latest scan: `ANALYSIS.md`, `PROMPT_GUIDE.md`
 - GitHub metadata: `.github/FUNDING.yml`, `.github/ISSUE_TEMPLATE/bug-report---.md`, `.github/ISSUE_TEMPLATE/feature-request---.md`
 - Asset: `images/logo.png`
@@ -91,3 +92,4 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - Keep console messages readable and route verbose command output into the log.
 - Add `(Y/N)` confirmation for long-running, destructive, privacy-affecting, or remote-execution operations.
 - Keep prompt/history updates append-friendly and date-stamped.
+- Keep future enhancement ideas in `memory/feature-ideas.md` so they can be reread and prioritized later.
