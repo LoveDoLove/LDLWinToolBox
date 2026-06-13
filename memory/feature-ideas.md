@@ -3,7 +3,7 @@
 Last updated: 2026-06-13
 
 This file is a living backlog of future enhancements and maintenance ideas for `LDLWinToolBox`.
-Keep entries concise, append-friendly, and aligned with the Batch-based, menu-driven design.
+Keep entries concise, append-friendly, and aligned with the Python-first, menu-driven design.
 
 ## Suggested Priority Order
 

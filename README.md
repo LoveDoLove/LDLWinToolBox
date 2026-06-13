@@ -18,7 +18,7 @@
 <h3 align="center">LDL Windows ToolBox</h3>
 
   <p align="center">
-    A cohesive, menu-driven Windows Batch utility that safely automates advanced system cleanup, integrity repair, component updates, network repair, BitLocker decryption planning, browser AI cleanup, and NVMe SSD optimizations.
+    A cohesive, menu-driven Windows utility that safely automates advanced system cleanup, integrity repair, component updates, network repair, BitLocker decryption planning, browser AI cleanup, and NVMe SSD optimizations.
     <br />
     <a href="https://github.com/LoveDoLove/LDLWinToolBox"><strong>Explore the docs »</strong></a>
     <br />
@@ -60,7 +60,7 @@
 
 ## About The Project
 
-The LDL Windows ToolBox is a standalone Windows Batch script (`LDLWinToolBox.bat`) that effectively combines administrative privileges checks, system garbage collection, script verifications, network reset, BitLocker decryption planning, browser AI cleanup, and SSD TRIM optimization into a single, cohesive menu-driven interface.
+The LDL Windows ToolBox is now a Python-first Windows utility powered by `uv`, with `LDLWinToolBox.bat` acting as a thin launcher for `ldlwintoolbox.py`. It combines administrative privileges checks, system cleanup, repair flows, network reset, BitLocker decryption planning, browser AI cleanup, and SSD TRIM optimization into a single, cohesive menu-driven interface.
 
 It safely automates otherwise tedious system administration tasks while maintaining comprehensive, timestamped logs (`logs\LDLWinToolBox_yyMMddHHmmss.log`) of all actions to ensure complete historical records and safety.
 
@@ -68,7 +68,8 @@ It safely automates otherwise tedious system administration tasks while maintain
 
 ### Built With
 
-- [![Windows Batch][Batch-shield]][Batch-url]
+- [![Python][Python-shield]][Python-url]
+- [![uv][uv-shield]][uv-url]
 - [![PowerShell][PowerShell-shield]][PowerShell-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -82,7 +83,7 @@ To get a local copy up and running follow these simple steps.
 ### Prerequisites
 
 - Windows 10 or Windows 11
-- Administrator rights (the script will automatically securely request this using `RunAs` if launched without it)
+- Administrator rights (the tool will automatically request this using UAC if launched without it)
 
 ### Installation
 
@@ -90,7 +91,7 @@ To get a local copy up and running follow these simple steps.
    ```sh
    git clone https://github.com/LoveDoLove/LDLWinToolBox.git
    ```
-2. Double-click on `LDLWinToolBox.bat` to launch the interactive menu.
+2. Double-click `LDLWinToolBox.bat` to launch the interactive menu, or run `uv run -- python ldlwintoolbox.py`.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -168,7 +169,7 @@ Project Link: [https://github.com/LoveDoLove/LDLWinToolBox](https://github.com/L
 ## Acknowledgments
 
 - [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
-- [RunAs PowerShell Module](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/start-process?view=powershell-7.2)
+- [Windows UAC / ShellExecuteW](https://learn.microsoft.com/windows/win32/api/shellapi/nf-shellapi-shellexecutew)
 - [Winget Tool](https://docs.microsoft.com/en-us/windows/package-manager/winget/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -186,7 +187,9 @@ Project Link: [https://github.com/LoveDoLove/LDLWinToolBox](https://github.com/L
 [issues-url]: https://github.com/LoveDoLove/LDLWinToolBox/issues
 [license-shield]: https://img.shields.io/github/license/LoveDoLove/LDLWinToolBox.svg?style=for-the-badge
 [license-url]: https://github.com/LoveDoLove/LDLWinToolBox/blob/master/LICENSE
-[Batch-shield]: https://img.shields.io/badge/Windows_Batch-0078D6?style=for-the-badge&logo=windows&logoColor=white
-[Batch-url]: https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/windows-commands
+[Python-shield]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
+[Python-url]: https://www.python.org/
+[uv-shield]: https://img.shields.io/badge/uv-111111?style=for-the-badge&logo=python&logoColor=white
+[uv-url]: https://docs.astral.sh/uv/
 [PowerShell-shield]: https://img.shields.io/badge/PowerShell-5391FE?style=for-the-badge&logo=powershell&logoColor=white
 [PowerShell-url]: https://docs.microsoft.com/en-us/powershell/

@@ -6,7 +6,7 @@ Last updated: 2026-06-13
 
 - User prefers Chinese-language collaboration when discussing work, while repository documentation may remain English if that matches the existing files.
 - Always analyze the current project first, then analyze prompt/history files, then apply future rules while preserving history.
-- Use Windows BAT/Command standard commands for this project.
+- Use Python as the primary implementation language for this project, with Windows command-line tools where appropriate.
 - Follow RTK command discipline from `C:\Users\LoveDoLove\.codex\RTK.md`; in this PowerShell environment, use `rtk cmd /c ...` for standard Windows commands.
 - Keep changes surgical and verifiable. Do not refactor unrelated code.
 - Skill packages under `.agents/skills/` must be cloned from public GitHub open-source skills, not authored manually in this repository.
@@ -19,7 +19,7 @@ Last updated: 2026-06-13
 - Current branch at scan time: `lovedolove`
 - Latest scanned commit: `816135b Merge branch 'main' into lovedolove`
 - License: Apache License 2.0
-- Primary executable: `LDLWinToolBox.bat`
+- Primary executable: `LDLWinToolBox.bat` launcher for `ldlwintoolbox.py`
 - Primary docs: `README.md`, `AGENTS.md`, `MEMORY.md`, `memory/tasks.md`
 - Backlog notes: `memory/feature-ideas.md`
 - Prompt/history docs observed as absent at the latest scan: `ANALYSIS.md`, `PROMPT_GUIDE.md`
@@ -30,7 +30,7 @@ Last updated: 2026-06-13
 
 ## Current Repository Logic
 
-`LDLWinToolBox.bat` is a standalone menu-driven Windows Batch script. It initializes delayed expansion, checks for Administrator access, relaunches with UAC through PowerShell `Start-Process -Verb RunAs` when needed, switches to the script directory, and creates a timestamped structured log file named `logs\LDLWinToolBox_yyMMddHHmmss.log`.
+`LDLWinToolBox.bat` is now a thin launcher that invokes `uv run -- python ldlwintoolbox.py`. The Python entry point initializes the menu, checks for Administrator access, relaunches with UAC when needed, switches to the script directory, and creates a timestamped structured log file named `logs\LDLWinToolBox_yyMMddHHmmss.log`.
 
 Logging behavior:
 
@@ -72,7 +72,7 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - `MEMORY.md` records long-term user preferences, repository facts, current logic, risks, and persistent rules.
 - `memory/tasks.md` tracks cross-session work.
 - `ANALYSIS.md` and `PROMPT_GUIDE.md` were not present in the latest working tree scan; if restored later, preserve their history and append updates.
-- Existing prompt rules emphasize Batch standard, auto-admin preservation, history preservation, input sanitization, clean verbosity, and long-running process warnings.
+- Existing prompt rules emphasize auto-admin preservation, history preservation, input sanitization, clean verbosity, and long-running process warnings.
 
 ## Known Gaps And Risks
 
@@ -85,8 +85,8 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 
 ## Persistent Working Rules
 
-- Preserve the app as a single-file Windows Batch tool unless the user explicitly asks for a different architecture.
-- Prefer native Windows commands and Batch syntax for implementation.
+- Preserve the app as a Python-first Windows utility with a thin Batch launcher unless the user explicitly asks for a different architecture.
+- Prefer Python standard library calls and native Windows commands for implementation.
 - Keep PowerShell calls minimal, one-line, and justified by Windows capability gaps.
 - Preserve auto-admin behavior and structured timestamped logs under `logs\`.
 - Keep console messages readable and route verbose command output into the log.

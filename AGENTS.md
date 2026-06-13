@@ -4,7 +4,7 @@
 
 ## Agent Role
 
-You are the AI maintainer for `LDLWinToolBox`, a standalone Windows Batch utility for administrative cleanup, repair, update, network reset, log clearing, and SSD TRIM workflows.
+You are the AI maintainer for `LDLWinToolBox`, a Python-first Windows utility with a thin Batch launcher for administrative cleanup, repair, update, network reset, log clearing, and SSD TRIM workflows.
 
 Work from repository facts first. Preserve existing history and project decisions unless the user explicitly asks to replace them.
 
@@ -22,13 +22,13 @@ On every new session:
 
 - Follow `C:\Users\LoveDoLove\.codex\RTK.md`: prefix shell commands with `rtk`.
 - Prefer Windows BAT/Command standard commands through `rtk cmd /c ...`.
-- Project implementation must remain centered on `.bat` and standard Windows commands.
-- Use PowerShell only as a narrow one-line bridge where native Batch lacks the required Windows capability, matching current patterns such as UAC `RunAs`, timestamp generation, disk free-space queries, or volume enumeration.
+- Project implementation must remain centered on `ldlwintoolbox.py` with `LDLWinToolBox.bat` as a thin launcher, using Python standard library code and standard Windows commands where appropriate.
+- Use PowerShell only as a narrow one-line bridge where Python or native Windows tooling lacks the required Windows capability, matching current patterns such as UAC `RunAs`, timestamp generation, disk free-space queries, or volume enumeration.
 - Avoid destructive commands during development unless they are scoped, reviewed, and explicitly requested.
 
 ## Project Rules
 
-- Main executable: `LDLWinToolBox.bat`.
+- Main executable: `LDLWinToolBox.bat` launcher for `ldlwintoolbox.py`.
 - Keep the app menu-driven and suitable for Windows 10/11.
 - The script must auto-check Administrator permission and auto-request elevation with UAC before system-level operations.
 - Preserve timestamped structured logging under `logs\LDLWinToolBox_yyMMddHHmmss.log`.
@@ -41,7 +41,7 @@ On every new session:
 
 ## Current Implemented Features
 
-Current `LDLWinToolBox.bat` menu implementation:
+Current `ldlwintoolbox.py` menu implementation:
 
 1. Advanced System Cleanup with space calculator.
 2. System Integrity Repair using `sfc /scannow` and `DISM /RestoreHealth`.

@@ -5,8 +5,6 @@ Last updated: 2026-06-13
 ## Pending
 
 - No open items.
-- Future enhancement ideas are now tracked in `memory/feature-ideas.md`.
-- The `Suggested Priority Order` in `memory/feature-ideas.md` is the default roadmap for the next optimization pass.
 
 ## Completed
 
@@ -20,3 +18,8 @@ Last updated: 2026-06-13
 - [x] 2026-06-07: Added read-only `View Log History` menu option for recent `logs\LDLWinToolBox_*.log` files.
 - [x] 2026-06-09: Rescanned current repository logic and updated `AGENTS.md`, `MEMORY.md`, and memory history.
 - [x] 2026-06-13: Restored session state, rescanned repository facts, retrieved and reviewed the remote `kill_ai.ps1` gist source, and confirmed no repo-local skills were needed for current work.
+- [x] 2026-06-13: Added shared Batch helpers for command preflight checks, confirmation prompts, and drive selection; refactored confirmation-driven menu actions to use them.
+- [x] 2026-06-13: Fixed empty-drive propagation in the BitLocker and SSD TRIM flows after the `":" was not understood` error surfaced.
+- [x] 2026-06-13: Reworked the project into a Python-first utility with `ldlwintoolbox.py`, `pyproject.toml`, and a thin `LDLWinToolBox.bat` launcher.
+- [x] 2026-06-13: Updated README, AGENTS, MEMORY, and the daily work log to describe the Python/uv entry point.
+- [x] 2026-06-13: Replaced the old Batch core with a Python implementation while keeping the launcher, logging, confirmations, and guarded remote command flow.
