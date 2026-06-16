@@ -1,6 +1,6 @@
 # MEMORY.md
 
-Last updated: 2026-06-16
+Last updated: 2026-06-17
 
 ## User Preferences
 
@@ -41,7 +41,7 @@ Logging behavior:
 - Uses helper labels for `INFO`, `WARN`, `ERROR`, `CMD`, and `OK` log entries.
 - Records feature section boundaries, menu selections, user cancellations, key command starts, command exit codes, and major completion messages.
 - Keeps raw command output in the same log file while keeping console output concise.
-- Provides a read-only Log History viewer that lists recent logs newest-first, caps the picker at the latest 9 entries, and opens a selected file with `more`.
+- Provides a read-only Log History viewer that lists recent logs newest-first, caps the picker at the latest 9 entries, and opens a selected file with an internal paged console viewer.
 
 Implemented menu behavior:
 

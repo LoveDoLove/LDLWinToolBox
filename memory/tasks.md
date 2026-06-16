@@ -1,6 +1,6 @@
 # memory/tasks.md
 
-Last updated: 2026-06-16
+Last updated: 2026-06-17
 
 ## Pending
 
@@ -8,6 +8,7 @@ Last updated: 2026-06-16
 
 ## Completed
 
+- [x] 2026-06-17: Replaced the Log History `more` viewer with an internal paged console viewer so CMD stays open while browsing logs.
 - [x] 2026-06-16: Rescanned the current repository against the Python-first implementation and refreshed AGENTS.md, MEMORY.md, and memory history with the latest commit and guarded remote-script details.
 - [x] 2026-06-07: Scanned current repository logic, docs, prompt files, Git metadata, and issue templates.
 - [x] 2026-06-07: Created `AGENTS.md`, `MEMORY.md`, `memory/tasks.md`, and daily work log to restore AI identity and project state in future sessions.
