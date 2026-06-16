@@ -17,7 +17,8 @@ Last updated: 2026-06-16
 - Repository path: `D:\Projects\WinProjects\LDLWinToolBox`
 - Git remote: `https://github.com/LoveDoLove/LDLWinToolBox.git`
 - Current branch at scan time: `lovedolove`
-- Latest scanned commit: `ae4ad2e Rewrite tool as Python uv launcher`
+- Latest scanned commit: `3b5e50e Complete toolbox safety features`
+- Latest repository scan: `2026-06-16`; the working tree was clean at the start of the documentation refresh.
 - License: Apache License 2.0
 - Primary executable: `LDLWinToolBox.bat` thin launcher for `ldlwintoolbox.py` via `uv run -- python`
 - Packaging metadata: `pyproject.toml`, `uv.lock`
@@ -52,7 +53,7 @@ Implemented menu behavior:
 6. Clear Event Viewer Logs: enumerates all logs with `wevtutil.exe el` and clears each one with `wevtutil.exe cl`.
 7. Manual SSD TRIM: lists volumes with PowerShell `Get-Volume`, sanitizes and validates a single drive letter, confirms the drive exists, runs `defrag <drive>: /L /V`, displays output, and appends it to the log.
 8. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
-9. Kill Browser AI: warns that it downloads and executes a remote PowerShell script, requires typing `KILL`, then runs the configured gist command and logs the result.
+9. Kill Browser AI: warns that it downloads and executes a remote PowerShell script, requires typing `KILL`, then launches PowerShell with `-ExecutionPolicy Bypass` and a guarded `try/catch` wrapper around the configured gist command so the result is logged.
 10. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
 11. Exit: closes the tool.
 
@@ -62,7 +63,7 @@ The user-listed feature targets below were implemented in `LDLWinToolBox.bat` on
 
 - Disable BitLocker `[Plan]` with status display, drive validation, and `DISABLE` confirmation.
 - Kill Browser AI using:
-  `iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex`
+  `powershell -NoProfile -ExecutionPolicy Bypass -Command "try { iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex; exit 0 } catch { Write-Error $_; exit 1 }"`
 
 Treat the remote `iwr | iex` command as high risk. Do not execute it during analysis. The menu feature requires a clear warning, `KILL` confirmation, and logging.
 
@@ -79,7 +80,7 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 
 - The current Python launcher/elevation flow uses `IsUserAnAdmin()` plus `ShellExecuteW(..., "runas", ...)`; keep both the `uv` and `sys.executable` launch paths working.
 - Cleanup no longer deletes Event Viewer log files directly; option 6 remains the safe `wevtutil` path for clearing logs.
-- The remote `kill_ai.ps1` gist was retrieved and reviewed on 2026-06-13; it disables Chrome and Edge on-device AI by applying registry policy keys and locking the `OptGuideOnDeviceModel` folders, but it still remains high risk and must not be executed automatically during analysis.
+- The remote `kill_ai.ps1` gist was retrieved and reviewed on 2026-06-13; it disables Chrome and Edge on-device AI by applying registry policy keys and locking the `OptGuideOnDeviceModel` folders, but it still remains high risk and is only executed through the guarded PowerShell wrapper after explicit `KILL` confirmation.
 - `BLANK_README.md` is present locally but ignored by git and appears to be an unused Best-README-Template source file.
 - No tracked `.agents/skills/` directory exists at the 2026-06-16 scan; any future repo-local skill installation must clone a public GitHub source and record provenance.
 

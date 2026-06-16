@@ -1,6 +1,6 @@
 # memory/tasks.md
 
-Last updated: 2026-06-13
+Last updated: 2026-06-16
 
 ## Pending
 
@@ -8,6 +8,7 @@ Last updated: 2026-06-13
 
 ## Completed
 
+- [x] 2026-06-16: Rescanned the current repository against the Python-first implementation and refreshed AGENTS.md, MEMORY.md, and memory history with the latest commit and guarded remote-script details.
 - [x] 2026-06-07: Scanned current repository logic, docs, prompt files, Git metadata, and issue templates.
 - [x] 2026-06-07: Created `AGENTS.md`, `MEMORY.md`, `memory/tasks.md`, and daily work log to restore AI identity and project state in future sessions.
 - [x] 2026-06-07: Fixed admin privilege check by replacing the malformed `cacls` protected-path check with `fltmc`.

@@ -52,7 +52,7 @@ Current `ldlwintoolbox.py` menu implementation:
 7. Manual SSD TRIM using `defrag /L /V`.
 8. Disable BitLocker `(Plan)` using `manage-bde -status`, drive validation, `DISABLE` confirmation, and guarded `manage-bde -off <drive>:`.
 9. Kill Browser AI using the user-specified command:
-  `iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex`
+  `powershell -NoProfile -ExecutionPolicy Bypass -Command "try { iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex; exit 0 } catch { Write-Error $_; exit 1 }"`
 10. View Log History using a read-only paged console viewer for the newest `logs\LDLWinToolBox_*.log` files.
 11. Exit.
 
