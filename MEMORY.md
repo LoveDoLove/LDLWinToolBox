@@ -1,6 +1,6 @@
 # MEMORY.md
 
-Last updated: 2026-06-13
+Last updated: 2026-06-16
 
 ## User Preferences
 
@@ -17,9 +17,10 @@ Last updated: 2026-06-13
 - Repository path: `D:\Projects\WinProjects\LDLWinToolBox`
 - Git remote: `https://github.com/LoveDoLove/LDLWinToolBox.git`
 - Current branch at scan time: `lovedolove`
-- Latest scanned commit: `816135b Merge branch 'main' into lovedolove`
+- Latest scanned commit: `ae4ad2e Rewrite tool as Python uv launcher`
 - License: Apache License 2.0
-- Primary executable: `LDLWinToolBox.bat` launcher for `ldlwintoolbox.py`
+- Primary executable: `LDLWinToolBox.bat` thin launcher for `ldlwintoolbox.py` via `uv run -- python`
+- Packaging metadata: `pyproject.toml`, `uv.lock`
 - Primary docs: `README.md`, `AGENTS.md`, `MEMORY.md`, `memory/tasks.md`
 - Backlog notes: `memory/feature-ideas.md`
 - Prompt/history docs observed as absent at the latest scan: `ANALYSIS.md`, `PROMPT_GUIDE.md`
@@ -30,7 +31,7 @@ Last updated: 2026-06-13
 
 ## Current Repository Logic
 
-`LDLWinToolBox.bat` is now a thin launcher that invokes `uv run -- python ldlwintoolbox.py`. The Python entry point initializes the menu, checks for Administrator access, relaunches with UAC when needed, switches to the script directory, and creates a timestamped structured log file named `logs\LDLWinToolBox_yyMMddHHmmss.log`.
+`LDLWinToolBox.bat` is now a thin launcher that invokes `uv run -- python ldlwintoolbox.py`. The Python entry point initializes the menu, checks for Administrator access, relaunches with UAC when needed, prefers `uv` when available and falls back to `sys.executable`, switches to the script directory, and creates a timestamped structured log file named `logs\LDLWinToolBox_yyMMddHHmmss.log`.
 
 Logging behavior:
 
@@ -39,7 +40,7 @@ Logging behavior:
 - Uses helper labels for `INFO`, `WARN`, `ERROR`, `CMD`, and `OK` log entries.
 - Records feature section boundaries, menu selections, user cancellations, key command starts, command exit codes, and major completion messages.
 - Keeps raw command output in the same log file while keeping console output concise.
-- Provides a read-only Log History viewer that lists recent logs newest-first and opens a selected file with `more`.
+- Provides a read-only Log History viewer that lists recent logs newest-first, caps the picker at the latest 9 entries, and opens a selected file with `more`.
 
 Implemented menu behavior:
 
@@ -76,12 +77,11 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 
 ## Known Gaps And Risks
 
-- The admin-check path issue was fixed by replacing the typo-prone `cacls` path check with `fltmc`.
+- The current Python launcher/elevation flow uses `IsUserAnAdmin()` plus `ShellExecuteW(..., "runas", ...)`; keep both the `uv` and `sys.executable` launch paths working.
 - Cleanup no longer deletes Event Viewer log files directly; option 6 remains the safe `wevtutil` path for clearing logs.
-- The Kill Browser AI gist content could not be verified from the local environment during implementation; keep the `KILL` confirmation and source warning.
-- The remote `kill_ai.ps1` gist was later retrieved on 2026-06-13; it disables Chrome and Edge on-device AI by applying registry policy keys and locking the `OptGuideOnDeviceModel` folders, but it still remains high risk and must not be executed automatically during analysis.
+- The remote `kill_ai.ps1` gist was retrieved and reviewed on 2026-06-13; it disables Chrome and Edge on-device AI by applying registry policy keys and locking the `OptGuideOnDeviceModel` folders, but it still remains high risk and must not be executed automatically during analysis.
 - `BLANK_README.md` is present locally but ignored by git and appears to be an unused Best-README-Template source file.
-- No tracked `.agents/skills/` directory exists at the 2026-06-09 scan; any future repo-local skill installation must clone a public GitHub source and record provenance.
+- No tracked `.agents/skills/` directory exists at the 2026-06-16 scan; any future repo-local skill installation must clone a public GitHub source and record provenance.
 
 ## Persistent Working Rules
 

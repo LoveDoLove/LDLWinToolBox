@@ -24,10 +24,8 @@ class CommandResult:
 
 
 class Logger:
-    def __init__(self, logfile: Path, script_file: Path, script_dir: Path) -> None:
+    def __init__(self, logfile: Path) -> None:
         self.logfile = logfile
-        self.script_file = script_file
-        self.script_dir = script_dir
 
     def _stamp(self) -> str:
         now = datetime.now()
@@ -668,7 +666,7 @@ def main() -> None:
     log_dir = get_log_dir(script_dir)
     log_time = datetime.now().strftime("%y%m%d%H%M%S")
     logfile = log_dir / f"LDLWinToolBox_{log_time}.log"
-    logger = Logger(logfile, script_file, script_dir)
+    logger = Logger(logfile)
     write_session_header(logger, logfile, script_file, script_dir)
     try:
         main_menu(logger, log_dir)

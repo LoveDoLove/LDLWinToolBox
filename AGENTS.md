@@ -21,14 +21,14 @@ On every new session:
 ## Command Rules
 
 - Follow `C:\Users\LoveDoLove\.codex\RTK.md`: prefix shell commands with `rtk`.
-- Prefer Windows BAT/Command standard commands through `rtk cmd /c ...`.
+- Prefer `rtk cmd /c ...` for standard Windows command-line utilities and keep implementation changes aligned with the Python entry point.
 - Project implementation must remain centered on `ldlwintoolbox.py` with `LDLWinToolBox.bat` as a thin launcher, using Python standard library code and standard Windows commands where appropriate.
 - Use PowerShell only as a narrow one-line bridge where Python or native Windows tooling lacks the required Windows capability, matching current patterns such as UAC `RunAs`, timestamp generation, disk free-space queries, or volume enumeration.
 - Avoid destructive commands during development unless they are scoped, reviewed, and explicitly requested.
 
 ## Project Rules
 
-- Main executable: `LDLWinToolBox.bat` launcher for `ldlwintoolbox.py`.
+- Main executable: `LDLWinToolBox.bat` thin launcher for `ldlwintoolbox.py` via `uv run -- python`.
 - Keep the app menu-driven and suitable for Windows 10/11.
 - The script must auto-check Administrator permission and auto-request elevation with UAC before system-level operations.
 - Preserve timestamped structured logging under `logs\LDLWinToolBox_yyMMddHHmmss.log`.
@@ -43,17 +43,17 @@ On every new session:
 
 Current `ldlwintoolbox.py` menu implementation:
 
-1. Advanced System Cleanup with space calculator.
+1. Advanced System Cleanup with a free-space calculator, Windows/user temp cleanup, `Prefetch`, `SoftwareDistribution\Download`, and vendor driver root cleanup.
 2. System Integrity Repair using `sfc /scannow` and `DISM /RestoreHealth`.
 3. Windows Component Store Cleanup using `DISM /StartComponentCleanup`.
 4. Update all installed apps using `winget upgrade --all`.
 5. Complete Network Reset using Winsock, TCP/IP reset, and DNS flush.
 6. Clear Event Viewer Logs using `wevtutil`.
 7. Manual SSD TRIM using `defrag /L /V`.
-8. Disable BitLocker `(Plan)` using `manage-bde -status` and guarded `manage-bde -off <drive>:`.
+8. Disable BitLocker `(Plan)` using `manage-bde -status`, drive validation, `DISABLE` confirmation, and guarded `manage-bde -off <drive>:`.
 9. Kill Browser AI using the user-specified command:
   `iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex`
-10. View Log History using a read-only paged console viewer for recent `logs\LDLWinToolBox_*.log` files.
+10. View Log History using a read-only paged console viewer for the newest `logs\LDLWinToolBox_*.log` files.
 11. Exit.
 
 Remote script execution is high risk. Do not run this command during development. If it is implemented as a menu feature, add an explicit warning and confirmation before execution.
@@ -63,7 +63,7 @@ Remote script execution is high risk. Do not run this command during development
 - Before coding, reviewing, or refactoring, check for applicable local skills under `.agents/skills/`.
 - Repository-local skill packages must be cloned from public GitHub open-source skills. Do not hand-write custom skill packages in this repo.
 - For every installed repo-local skill, preserve upstream provenance: source URL, commit or tag, and license.
-- Current scan on 2026-06-09 found no tracked `.agents/skills/` directory in this repository.
+- Current scan on 2026-06-16 found no tracked `.agents/skills/` directory in this repository.
 - The session-level `karpathy-guidelines` skill exists outside this repo and may be used for disciplined coding behavior, but it is not currently a repo-local cloned skill asset.
 
 ## Memory Files
