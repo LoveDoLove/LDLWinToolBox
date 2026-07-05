@@ -8,6 +8,7 @@ from toolbox_base import (
     MENU_LOGO,
     Logger,
     clear_screen,
+    create_restore_point,
     prompt_yes_no,
     run_and_log,
     run_command,
@@ -35,6 +36,12 @@ def cleanup(logger: Logger) -> None:
     print(f"All operations are being logged to:\n{logger.logfile}")
     print(MENU_LOGO)
     logger.section("Advanced System Cleanup")
+    if prompt_yes_no(
+        logger,
+        "Create a system restore point before proceeding? (Y/N): ",
+        "Restore Point - Advanced System Cleanup",
+    ):
+        create_restore_point(logger, "Before Advanced System Cleanup")
     if not prompt_yes_no(
         logger,
         "Do you want to proceed? (Y/N): ",

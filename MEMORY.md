@@ -52,27 +52,27 @@ Implemented menu behavior (each feature in its own `features/*.py` file), groupe
 
 **System Cleanup (1-3):**
 
-1. Advanced System Cleanup: asks Y/N confirmation; calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads, and root driver folders such as `AMD`, `NVIDIA`, and `INTEL`; rebuilds temp directories; restarts services; reports MB freed. Event Viewer logs are intentionally handled by option 3 instead of direct file deletion.
-2. Windows Component Store Cleanup: asks confirmation, runs `DISM.exe /Online /Cleanup-Image /StartComponentCleanup`.
-3. Clear Event Viewer Logs: asks Y/N confirmation; enumerates all logs with `wevtutil.exe el` and clears each one with `wevtutil.exe cl`.
+1. Advanced System Cleanup: asks Y/N confirmation, optional restore point; calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads, and root driver folders such as `AMD`, `NVIDIA`, and `INTEL`; rebuilds temp directories; restarts services; reports MB freed. Event Viewer logs are intentionally handled by option 3 instead of direct file deletion.
+2. Windows Component Store Cleanup: asks Y/N confirmation and optional restore point, runs `DISM.exe /Online /Cleanup-Image /StartComponentCleanup`.
+3. Clear Event Viewer Logs: asks Y/N confirmation and optional restore point; enumerates all logs with `wevtutil.exe el` and clears each one with `wevtutil.exe cl`.
 
 **System Repair & Update (4-5):**
 
-4. System Integrity Repair: asks confirmation, runs `sfc /scannow`, then `DISM /Online /Cleanup-Image /RestoreHealth`.
-5. Update All Installed Apps: asks confirmation, runs `winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements`.
+4. System Integrity Repair: asks confirmation and optional restore point, runs `sfc /scannow`, then `DISM /Online /Cleanup-Image /RestoreHealth`.
+5. Update All Installed Apps: asks confirmation and optional restore point, runs `winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements`.
 
 **Network (6):**
 
-6. Complete Network Reset: asks confirmation, runs `netsh winsock reset`, `netsh int ip reset`, and `ipconfig /flushdns`; tells user to restart.
+6. Complete Network Reset: asks confirmation and optional restore point, runs `netsh winsock reset`, `netsh int ip reset`, and `ipconfig /flushdns`; tells user to restart.
 
 **Performance (7-8):**
 
-7. Manual SSD TRIM: lists volumes with PowerShell `Get-Volume`, sanitizes and validates a single drive letter, confirms the drive exists, asks Y/N confirmation, runs `defrag <drive>: /L /V`, displays output, and appends it to the log.
+7. Manual SSD TRIM: lists volumes with PowerShell `Get-Volume`, sanitizes and validates a single drive letter, confirms the drive exists, asks Y/N confirmation and optional restore point, runs `defrag <drive>: /L /V`, displays output, and appends it to the log.
 8. Low Latency Mode: auto-detects CPU architecture (Intel/AMD x64 or Snapdragon ARM64), fetches the latest ViVeTool release from GitHub via API, downloads and extracts the matching ZIP to `tools/vivetool/`, and provides a sub-menu to query/enable/disable feature IDs 58989092, 60716524, and 61391826. Version caching avoids redundant downloads.
 
 **Security & Privacy (9-10):**
 
-9. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
+9. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, optional restore point, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
 10. Kill Browser AI: warns that it downloads and executes a remote PowerShell script, requires typing `KILL`, then launches PowerShell with `-ExecutionPolicy Bypass` and a guarded `try/catch` wrapper around the configured gist command so the result is logged.
 
 **Tools (11):**
@@ -131,6 +131,16 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - Downloads binaries from GitHub; requires internet on first run
 - Feature ID changes in future Windows builds may require updates
 - Reboot may be required after changing low latency features
+
+## Restore Point Feature
+
+`create_restore_point(logger, description)` in `toolbox_base.py` creates a system restore point before destructive operations. Key behaviors:
+
+- Uses `Checkpoint-Computer` via single-line PowerShell
+- Asks user `(Y/N)` before attempting
+- Failure (e.g. System Restore disabled) logs WARN and continues — never blocks the feature
+- Known error `0x80070422` detected and shown with a helpful message
+- Integrated into features 1-7 and 9 (all except read-only/remote features)
 
 ## Known Gaps And Risks
 

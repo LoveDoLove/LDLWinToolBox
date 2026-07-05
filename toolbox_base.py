@@ -149,6 +149,39 @@ def select_existing_drive(logger: Logger, context: str) -> str | None:
     return choice
 
 
+def create_restore_point(logger: Logger, description: str) -> bool:
+    """Create a system restore point. Returns True on success, False on failure.
+
+    If System Restore is disabled or PowerShell is unavailable, logs a warning
+    and returns False without blocking the caller.
+    """
+    if not command_exists("powershell"):
+        logger.log_only(
+            "WARN",
+            "Cannot create restore point: PowerShell is not available.",
+        )
+        return False
+    ps = (
+        "Checkpoint-Computer -Description 'LDLWinToolBox - "
+        + description.replace("'", "''")
+        + "' -RestorePointType MODIFY_SETTINGS"
+    )
+    logger.log_only("INFO", f"Creating system restore point: {description} ...")
+    result = run_command(["powershell", "-NoProfile", "-Command", ps], capture=True)
+    rc = result.code
+    if rc == 0:
+        logger.log_only("OK", f"Restore point created: {description}")
+        print(">>> System restore point created successfully.")
+        return True
+    stderr = result.stderr.strip()
+    logger.log_only("WARN", f"Restore point failed (exit={rc}): {stderr or 'unknown error'}")
+    if "0x80070422" in stderr:
+        print(">>> System Restore may be disabled. Enable it in System Properties to use this feature.")
+    else:
+        print(f">>> Restore point creation failed (exit={rc}). Continuing anyway.")
+    return False
+
+
 def write_session_header(
     logger: Logger, logfile: Path, script_file: Path, script_dir: Path
 ) -> None:

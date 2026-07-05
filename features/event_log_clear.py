@@ -5,6 +5,7 @@ from toolbox_base import (
     Logger,
     clear_screen,
     command_exists,
+    create_restore_point,
     prompt_yes_no,
     run_and_log,
     run_command,
@@ -26,6 +27,12 @@ def event_logs(logger: Logger) -> None:
         )
         input("Press Enter to continue...")
         return
+    if prompt_yes_no(
+        logger,
+        "Create a system restore point before proceeding? (Y/N): ",
+        "Restore Point - Clear Event Viewer Logs",
+    ):
+        create_restore_point(logger, "Before Clearing Event Viewer Logs")
     if not prompt_yes_no(
         logger,
         "Clear all Event Viewer logs? (Y/N): ",

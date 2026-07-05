@@ -5,6 +5,7 @@ from toolbox_base import (
     Logger,
     clear_screen,
     command_exists,
+    create_restore_point,
     prompt_yes_no,
     run_and_log,
 )
@@ -19,6 +20,12 @@ def net_reset(logger: Logger) -> None:
     print("-> A system restart will be required afterward.")
     print(MENU_LOGO)
     logger.section("Complete Network Reset")
+    if prompt_yes_no(
+        logger,
+        "Create a system restore point before proceeding? (Y/N): ",
+        "Restore Point - Complete Network Reset",
+    ):
+        create_restore_point(logger, "Before Network Reset")
     if not prompt_yes_no(
         logger, "Do you want to proceed? (Y/N): ", "Complete Network Reset"
     ):

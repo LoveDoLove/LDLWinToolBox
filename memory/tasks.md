@@ -4,11 +4,12 @@ Last updated: 2026-07-05
 
 ## Pending
 
-- [ ] Overall user testing and feedback
+- [ ] Phase 2+: System information summary, progress hints, Windows Update check, Defender check, service health, SMART summary, driver inventory, network snapshot, reduced PS calls, export report, self-update, selective cleanup, safe mode, read-only mode
 
 ## Completed
 
-- [x] 2026-07-05: Added missing Y/N confirmation prompts to features 1 (Advanced System Cleanup), 3 (Clear Event Viewer Logs), 7 (Manual SSD TRIM), and 12 (Exit).
+- [x] 2026-07-05: Added optional restore point via `create_restore_point()` to features 1-7 and 9.
+- [x] 2026-07-05: Added missing Y/N confirmation prompts to features 1, 3, 7, and 12.
 - [x] 2026-07-05: Reorganized main menu into logical groups (Cleanup / Repair & Update / Network / Performance / Security & Privacy / Tools).
 - [x] 2026-07-05: Refactored monolithic `ldlwintoolbox.py` into `toolbox_base.py` + `features/` (one file per feature).
 - [x] 2026-07-05: Implemented Low Latency Mode with architecture detection, auto ViVeTool download/extraction, and sub-menu (query/enable/disable).

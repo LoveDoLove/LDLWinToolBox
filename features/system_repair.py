@@ -5,6 +5,7 @@ from toolbox_base import (
     Logger,
     clear_screen,
     command_exists,
+    create_restore_point,
     prompt_yes_no,
     run_and_log,
 )
@@ -20,6 +21,12 @@ def sys_repair(logger: Logger) -> None:
     print("-> However, it is recommended to let it finish.")
     print(MENU_LOGO)
     logger.section("System Integrity Repair")
+    if prompt_yes_no(
+        logger,
+        "Create a system restore point before proceeding? (Y/N): ",
+        "Restore Point - System Integrity Repair",
+    ):
+        create_restore_point(logger, "Before System Integrity Repair")
     if not prompt_yes_no(
         logger, "Do you want to proceed? (Y/N): ", "System Integrity Repair"
     ):

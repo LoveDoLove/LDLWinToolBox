@@ -5,6 +5,7 @@ from toolbox_base import (
     Logger,
     clear_screen,
     command_exists,
+    create_restore_point,
     prompt_yes_no,
     run_and_log,
 )
@@ -20,6 +21,12 @@ def app_update(logger: Logger) -> None:
     print("-> It CAN be safely interrupted.")
     print(MENU_LOGO)
     logger.section("Update Installed Apps")
+    if prompt_yes_no(
+        logger,
+        "Create a system restore point before proceeding? (Y/N): ",
+        "Restore Point - Update Installed Apps",
+    ):
+        create_restore_point(logger, "Before Winget App Upgrade")
     if not prompt_yes_no(
         logger, "Do you want to proceed? (Y/N): ", "Update Installed Apps"
     ):

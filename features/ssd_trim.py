@@ -8,6 +8,7 @@ from toolbox_base import (
     Logger,
     clear_screen,
     command_exists,
+    create_restore_point,
     prompt_yes_no,
     run_and_log,
     run_command,
@@ -59,6 +60,12 @@ def ssd_trim(logger: Logger) -> None:
         input("Press Enter to continue...")
         return
     logger.log_only("INFO", f"Selected TRIM drive: {drive}:")
+    if prompt_yes_no(
+        logger,
+        "Create a system restore point before proceeding? (Y/N): ",
+        "Restore Point - Manual SSD TRIM",
+    ):
+        create_restore_point(logger, "Before SSD TRIM")
     if not prompt_yes_no(
         logger,
         f"Run SSD TRIM on drive {drive}:? (Y/N): ",

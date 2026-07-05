@@ -5,7 +5,9 @@ from toolbox_base import (
     Logger,
     clear_screen,
     command_exists,
+    create_restore_point,
     prompt_keyword,
+    prompt_yes_no,
     run_and_log,
     select_existing_drive,
 )
@@ -76,6 +78,12 @@ def bitlocker_disable(logger: Logger) -> None:
             end="" if status_result.stderr.endswith("\n") else "\n",
         )
     print()
+    if prompt_yes_no(
+        logger,
+        "Create a system restore point before proceeding? (Y/N): ",
+        "Restore Point - Disable BitLocker",
+    ):
+        create_restore_point(logger, "Before Disabling BitLocker")
     if not prompt_keyword(
         logger,
         f"Type DISABLE to start decryption for {drive}: ",

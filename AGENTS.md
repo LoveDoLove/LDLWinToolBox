@@ -53,27 +53,27 @@ The project follows a modular file-per-feature architecture:
 
 ### System Cleanup (1-3)
 
-1. Advanced System Cleanup in `features/system_cleanup.py` with Y/N confirmation, free-space calculator, Windows/user temp cleanup, `Prefetch`, `SoftwareDistribution\Download`, and vendor driver root cleanup.
-2. Windows Component Store Cleanup in `features/winsxs_cleanup.py` using `DISM /StartComponentCleanup`.
-3. Clear Event Viewer Logs in `features/event_log_clear.py` with Y/N confirmation using `wevtutil`.
+1. Advanced System Cleanup in `features/system_cleanup.py` with Y/N confirmation, optional restore point, free-space calculator, Windows/user temp cleanup, `Prefetch`, `SoftwareDistribution\Download`, and vendor driver root cleanup.
+2. Windows Component Store Cleanup in `features/winsxs_cleanup.py` with Y/N confirmation and optional restore point using `DISM /StartComponentCleanup`.
+3. Clear Event Viewer Logs in `features/event_log_clear.py` with Y/N confirmation and optional restore point using `wevtutil`.
 
 ### System Repair & Update (4-5)
 
-4. System Integrity Repair in `features/system_repair.py` using `sfc /scannow` and `DISM /RestoreHealth`.
-5. Update all installed apps in `features/winget_upgrade.py` using `winget upgrade --all`.
+4. System Integrity Repair in `features/system_repair.py` with Y/N confirmation and optional restore point using `sfc /scannow` and `DISM /RestoreHealth`.
+5. Update all installed apps in `features/winget_upgrade.py` with Y/N confirmation and optional restore point using `winget upgrade --all`.
 
 ### Network (6)
 
-6. Complete Network Reset in `features/network_reset.py` using Winsock, TCP/IP reset, and DNS flush.
+6. Complete Network Reset in `features/network_reset.py` with Y/N confirmation and optional restore point using Winsock, TCP/IP reset, and DNS flush.
 
 ### Performance (7-8)
 
-7. Manual SSD TRIM in `features/ssd_trim.py` with Y/N confirmation after drive selection using `defrag /L /V`.
+7. Manual SSD TRIM in `features/ssd_trim.py` with Y/N confirmation after drive selection and optional restore point using `defrag /L /V`.
 8. Low Latency Mode in `features/low_latency_mode.py` using ViVeTool (architecture detection, auto-download, sub-menu for query/enable/disable for feature IDs 58989092, 60716524, 61391826).
 
 ### Security & Privacy (9-10)
 
-9. Disable BitLocker in `features/bitlocker_disable.py` using `manage-bde -status`, drive validation, `DISABLE` confirmation, and guarded `manage-bde -off <drive>:`.
+9. Disable BitLocker in `features/bitlocker_disable.py` using `manage-bde -status`, drive validation, optional restore point, `DISABLE` confirmation, and guarded `manage-bde -off <drive>:`.
 10. Kill Browser AI in `features/browser_ai_killer.py` using the configured remote PowerShell script.
 
 ### Tools (11)
