@@ -75,11 +75,18 @@ Implemented menu behavior (each feature in its own `features/*.py` file), groupe
 9. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, optional restore point, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
 10. Kill Browser AI: warns that it downloads and executes a remote PowerShell script, requires typing `KILL`, then launches PowerShell with `-ExecutionPolicy Bypass` and a guarded `try/catch` wrapper around the configured gist command so the result is logged.
 
-**Tools (11):**
+**Tools (15):**
 
-11. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
+15. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
 
-12. Exit: asks Y/N confirmation, then closes the tool.
+16. Exit: asks Y/N confirmation, then closes the tool.
+
+**Diagnostics (11-14):**
+
+11. System Information: read-only summary of OS, CPU, RAM, disk, uptime using stdlib + ctypes + winreg.
+12. Windows Update Status: queries wuauserv, Auto Update registry config, last install/search dates; runs UsoClient scan.
+13. Defender Status & Quick Scan: displays Get-MpComputerStatus fields, optional MpCmdRun signature update, optional Start-MpQuickScan.
+14. Service Health Check: checks 20 critical services via PowerShell Get-Service, shows Running/Stopped summary.
 
 ## Implemented Feature Targets
 

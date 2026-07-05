@@ -21,12 +21,12 @@ Keep entries concise, append-friendly, and aligned with the Python-first, menu-d
 - [x] Add progress hints for long-running tasks (`[1/N]` markers where missing)
 - [x] Make cleanup operations more conservative by default (vendor driver roots now opt-in)
 
-### Phase 3: New Feature Modules
+### Phase 3: New Feature Modules ✅ (Complete)
 
-1. System information summary
-2. Windows Update status check
-3. Defender status check and quick scan entry
-4. Service health check for common Windows services
+- [x] System information summary (OS, CPU, RAM, disk, uptime via ctypes+winreg)
+- [x] Windows Update status check (service, registry config, UsoClient scan)
+- [x] Defender status check and quick scan entry (Get-MpComputerStatus, Start-MpQuickScan)
+- [x] Service health check for common Windows services (20 critical services)
 
 ### Phase 4: Diagnostics & Reporting
 

@@ -8,6 +8,7 @@ Last updated: 2026-07-05
 
 ## Completed
 
+- [x] 2026-07-05: Phase 3: Created 4 diagnostic features (system_info, windows_update, defender_tools, service_health) with read-only info + optional scan actions. Renumbered menu (Exit: 12→16).
 - [x] 2026-07-05: Phase 2: Added progress hints `[1/1]` to WinSxS / Winget, `[1/2][2/2]` to SFC+DISM; made vendor driver root deletion opt-in (Y/N) for conservative cleanup.
 - [x] 2026-07-05: Added optional restore point via `create_restore_point()` to features 1-7 and 9.
 - [x] 2026-07-05: Added missing Y/N confirmation prompts to features 1, 3, 7, and 12.
