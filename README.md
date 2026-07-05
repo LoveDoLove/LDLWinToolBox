@@ -66,6 +66,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -79,20 +80,20 @@
 
 The LDL Windows ToolBox is a Python-first Windows utility that combines administrative privilege elevation, system cleanup, repair flows, network reset, BitLocker management, browser AI cleanup, SSD TRIM, low-latency configuration, recovery tools, diagnostics, and reporting into a single cohesive menu-driven interface.
 
-The project follows a modular file-per-feature architecture:
+The project follows a modular file-per-feature architecture running with zero external dependencies (Python standard library + built-in Windows commands + ANSI escape codes):
 
 - `LDLWinToolBox.bat` — thin Batch launcher invoking `uv run -- python ldlwintoolbox.py`
-- `ldlwintoolbox.py` — entry point with admin detection, read-only mode, and colored main menu dispatch
-- `toolbox_base.py` — shared infrastructure (Logger, CommandResult, ANSI Color, Spinner, run/command/prompt helpers)
-- `features/` — one file per feature, each importing only from `toolbox_base`
-- `config/exclusions.json` — user-managed exclusion list for cleanup operations
-- `logs/` — structured timestamped session logs
-- `scripts/check.ps1` — ruff lint + format check runner
+- `ldlwintoolbox.py` — entry point with admin detection, UAC relaunch, and colored main menu dispatch
+- `toolbox_base.py` — shared infrastructure (Logger, Color, cprint, Spinner, CommandResult, run/command/prompt helpers)
+- `features/` — one file per feature (23 menu items), each importing only from `toolbox_base`
+- `config/exclusions.json` — runtime-managed exclusion list for cleanup operations (created on first use)
+- `logs/` — timestamped structured session logs with session header, section markers, command exit codes
+- `scripts/check.ps1` — unified ruff lint + format check runner
 - `LDLWinToolBox.spec` — PyInstaller spec for EXE packaging
 - `.github/workflows/ci.yml` — CI workflow (ruff on push/PR)
 - `.github/workflows/release.yml` — Release workflow (PyInstaller build on version tag)
 
-The tool runs with zero external dependencies (Python standard library + built-in Windows commands + ANSI escape codes). When launched without administrator privileges, it automatically enters **read-only mode**, hiding destructive features and allowing safe inspection of system information, diagnostics, and logs.
+When launched without administrator privileges, the tool automatically enters **read-only mode**, hiding destructive features (1–11) and providing a "[R] Restart as Administrator" shortcut while allowing safe inspection of system information, diagnostics, and logs. When launched as admin, all 23 menu items are available and long-running or destructive operations display warnings, require explicit (Y/N) confirmation, and offer optional system restore points.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -115,6 +116,7 @@ To get a local copy up and running follow these simple steps.
 - Windows 10 or Windows 11
 - Administrator rights (optional — the tool supports read-only mode without elevation; destructive features auto-request UAC if needed)
 - [uv](https://docs.astral.sh/uv/) (recommended) — the launcher falls back to `python` if uv is not available
+- Python 3.11 or later
 
 ### Installation
 
@@ -170,12 +172,16 @@ Upon launching, the interactive menu provides numbered options organized into lo
 
 ### Tools (20–22)
 - **[20] View Log History**: Lists recent toolbox logs and opens the selected file with a paged console viewer.
-- **[21] Check for Updates**: Queries the GitHub Releases API, compares with local version, optionally opens browser for download.
+- **[21] Check for Updates**: Queries the GitHub Releases API, compares with local version (v1.0.7), optionally opens browser for download.
 - **[22] Cleanup Exclusion List**: Manages a JSON-based exclusion list (`config/exclusions.json`); paths matching exclusions are skipped during cleanup.
 
 Each run writes a structured log under `logs/` with a session header, environment summary, section markers, user cancellations, command start/end markers, and exit codes. Long-running or destructive operations display warnings and require explicit (Y/N) confirmation. Optional system restore points can be created before destructive features.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- ROADMAP -->
+
+## Roadmap
 
 See the [open issues](https://github.com/LoveDoLove/LDLWinToolBox/issues) for a full list of proposed features (and known issues).
 

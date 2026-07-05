@@ -48,12 +48,16 @@ The project follows a modular file-per-feature architecture:
 - `toolbox_base.py` — shared infrastructure (Logger, CommandResult, Color, cprint, Spinner, run/command/prompt helpers)
 - `features/` — one file per feature, each importing only from `toolbox_base`
 - `scripts/check.ps1` — unified ruff lint + format check runner
-- `LDLWinToolBox.spec` — PyInstaller spec for EXE packaging
+- `LDLWinToolBox.spec` — PyInstaller spec for EXE packaging; version via `str(vers)` not `repr(vers)` (see below)
 - `.github/workflows/ci.yml` — CI (ruff on push/PR)
 - `.github/workflows/release.yml` — Release (PyInstaller build on tag)
 - `README.md` — project documentation written using the `BLANK_README.md` (Best-README-Template) format, covering all 23 menu features, architecture, and production build info
 - Zero external dependencies; all imports from Python stdlib; ANSI colors for UX
 - `TOOLBOX_VERSION` read dynamically from `pyproject.toml` via `tomllib`
+
+### PyInstaller Spec: Version File Serialization
+
+In `LDLWinToolBox.spec`, the version info `VSVersionInfo` object is serialized to `build/version_info.txt` using `str(vers)`, then loaded by `EXE(version=str(vers_file))`. **Must use `str()` not `repr()`** — `repr(vers)` produces qualified names (`versioninfo.VSVersionInfo(...)`) that cannot be `eval()`'d inside PyInstaller's `versioninfo.py` module scope, while `str(vers)` produces unqualified names (`VSVersionInfo(...)`) that match the `pyi-grab_version` format and deserialize correctly.
 
 ## Current Implemented Features
 
