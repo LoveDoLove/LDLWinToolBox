@@ -1,4 +1,3 @@
-# -*- mode: python ; coding: utf-8 -*-
 # PyInstaller spec for LDLWinToolBox
 
 import tomllib
@@ -57,7 +56,7 @@ vers_file = here / "build" / "version_info.txt"
 vers_file.parent.mkdir(parents=True, exist_ok=True)
 vers_file.write_text(repr(vers), encoding="utf-8")
 
-a = Analysis(
+a = Analysis(  # noqa: F821
     ["ldlwintoolbox.py"],
     pathex=[],
     binaries=[],
@@ -72,9 +71,9 @@ a = Analysis(
     ],
     noarchive=False,
 )
-pyz = PYZ(a.pure)
+pyz = PYZ(a.pure)  # noqa: F821
 
-exe = EXE(
+exe = EXE(  # noqa: F821
     pyz,
     a.scripts,
     a.binaries,
