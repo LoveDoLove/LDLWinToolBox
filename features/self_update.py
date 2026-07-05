@@ -5,7 +5,7 @@ import re
 import urllib.error
 import urllib.request
 
-from toolbox_base import MENU_LOGO, TOOLBOX_VERSION, Logger, clear_screen, run_command
+from toolbox_base import MENU_LOGO, TOOLBOX_VERSION, Logger, clear_screen, prompt_yes_no
 
 
 def _parse_tag(tag: str) -> tuple[int, ...]:
@@ -86,7 +86,6 @@ def self_update(logger: Logger) -> None:
             for line in short.splitlines()[:10]:
                 print(f"    {line}")
         print()
-        from urllib.request import urlopen
         try:
             req_check = urllib.request.Request(
                 remote_url_page,
