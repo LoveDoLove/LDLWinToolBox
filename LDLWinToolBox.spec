@@ -54,7 +54,7 @@ vers = VSVersionInfo(
 
 vers_file = here / "build" / "version_info.txt"
 vers_file.parent.mkdir(parents=True, exist_ok=True)
-vers_file.write_text(repr(vers), encoding="utf-8")
+vers_file.write_text(str(vers), encoding="utf-8")
 
 a = Analysis(  # noqa: F821
     ["ldlwintoolbox.py"],
