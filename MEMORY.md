@@ -79,14 +79,18 @@ Implemented menu behavior (each feature in its own `features/*.py` file), groupe
 
 15. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
 
-16. Exit: asks Y/N confirmation, then closes the tool.
+20. Exit: asks Y/N confirmation, then closes the tool.
 
-**Diagnostics (11-14):**
+**Diagnostics (11-18):**
 
 11. System Information: read-only summary of OS, CPU, RAM, disk, uptime using stdlib + ctypes + winreg.
 12. Windows Update Status: queries wuauserv, Auto Update registry config, last install/search dates; runs UsoClient scan.
 13. Defender Status & Quick Scan: displays Get-MpComputerStatus fields, optional MpCmdRun signature update, optional Start-MpQuickScan.
 14. Service Health Check: checks 20 critical services via PowerShell Get-Service, shows Running/Stopped summary.
+15. Disk Health & SMART: Get-PhysicalDisk + Get-StorageReliabilityCounter for health, wear, temp, errors; volume summary.
+16. Driver Inventory: parses driverquery /FO CSV output, shows all drivers with type/date summary.
+17. Network Snapshot: captures ipconfig/route/netsh/netstat state to file and log; optional diff against previous snapshot.
+18. Export Logs & Report: generates a plain-text session report (features run, commands, warnings) and archives all logs to ZIP.
 
 ## Implemented Feature Targets
 

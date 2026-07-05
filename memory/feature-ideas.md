@@ -28,13 +28,12 @@ Keep entries concise, append-friendly, and aligned with the Python-first, menu-d
 - [x] Defender status check and quick scan entry (Get-MpComputerStatus, Start-MpQuickScan)
 - [x] Service health check for common Windows services (20 critical services)
 
-### Phase 4: Diagnostics & Reporting
+### Phase 4: Reporting & Export ✅ (Complete)
 
-1. Disk health and SMART summary
-2. Driver inventory and version view
-3. Network before/after snapshot
-4. Log export and archive bundle
-5. Exportable report of actions and results
+- [x] Disk health and SMART summary (Get-PhysicalDisk + Get-StorageReliabilityCounter)
+- [x] Driver inventory and version view (driverquery /FO CSV parsing)
+- [x] Network before/after snapshot (ipconfig/route/netsh/netstat capture + diff)
+- [x] Log export and archive bundle (#4+#5 combined: report generation + ZIP archive)
 
 ### Phase 5: Efficiency & Maintenance
 
@@ -50,14 +49,14 @@ Keep entries concise, append-friendly, and aligned with the Python-first, menu-d
 
 ## New Features
 
-- System information summary
-- Windows Update status check
-- Driver inventory and version view
-- Service health check for common Windows services
-- Disk health and SMART summary
-- Log export and archive bundle
-- Network before/after snapshot
-- Defender status check and quick scan entry
+- [x] System information summary
+- [x] Windows Update status check
+- [x] Driver inventory and version view
+- [x] Service health check for common Windows services
+- [x] Disk health and SMART summary
+- [x] Log export and archive bundle
+- [x] Network before/after snapshot
+- [x] Defender status check and quick scan entry
 - Safe Mode or recovery entry helpers
 - Selective cleanup instead of fixed cleanup sets
 - Custom exclusion list for cleanup targets
@@ -66,10 +65,10 @@ Keep entries concise, append-friendly, and aligned with the Python-first, menu-d
 
 ## Optimizations
 
-- Reduce redundant PowerShell calls
-- Improve error handling and user-facing failure messages
-- Add progress hints for long-running tasks
-- Make cleanup operations more conservative by default
+- [x] Reduce redundant PowerShell calls
+- [x] Improve error handling and user-facing failure messages
+- [x] Add progress hints for long-running tasks
+- [x] Make cleanup operations more conservative by default
 - Add a read-only mode for status checks
 - Maintain a lightweight verification checklist after changes
 - Keep README, memory, and task notes synchronized

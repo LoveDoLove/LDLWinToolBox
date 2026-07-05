@@ -17,10 +17,14 @@ from toolbox_base import (
 from features.bitlocker_disable import bitlocker_disable
 from features.browser_ai_killer import kill_browser_ai
 from features.defender_tools import defender_tools
+from features.disk_health import disk_health
+from features.driver_inventory import driver_inventory
 from features.event_log_clear import event_logs
+from features.export_report import export_report
 from features.log_viewer import log_history
 from features.low_latency_mode import low_latency_mode
 from features.network_reset import net_reset
+from features.network_snapshot import network_snapshot
 from features.service_health import service_health
 from features.ssd_trim import ssd_trim
 from features.system_cleanup import cleanup
@@ -83,10 +87,14 @@ def main_menu(logger: Logger, log_dir: Path) -> None:
         print("[12] Windows Update Status")
         print("[13] Defender Status & Quick Scan")
         print("[14] Service Health Check")
+        print("[15] Disk Health & SMART Summary")
+        print("[16] Driver Inventory")
+        print("[17] Network Snapshot")
+        print("[18] Export Logs & Report")
         print(" ── Tools ──")
-        print("[15] View Log History")
+        print("[19] View Log History")
         print("───────────────────────────────────────────────")
-        print("[16] Exit")
+        print("[20] Exit")
         print("===============================================")
         print(f"Log: {logger.logfile}")
         print("===============================================")
@@ -122,8 +130,16 @@ def main_menu(logger: Logger, log_dir: Path) -> None:
         elif choice == "14":
             service_health(logger)
         elif choice == "15":
-            log_history(logger, log_dir)
+            disk_health(logger)
         elif choice == "16":
+            driver_inventory(logger)
+        elif choice == "17":
+            network_snapshot(logger, script_dir)
+        elif choice == "18":
+            export_report(logger, log_dir)
+        elif choice == "19":
+            log_history(logger, log_dir)
+        elif choice == "20":
             if not prompt_yes_no(
                 logger,
                 "Are you sure you want to exit? (Y/N): ",
