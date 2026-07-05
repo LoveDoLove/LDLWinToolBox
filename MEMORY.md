@@ -17,7 +17,7 @@ Last updated: 2026-07-05
 - Repository path: `D:\Projects\WinProjects\LDLWinToolBox`
 - Git remote: `https://github.com/LoveDoLove/LDLWinToolBox.git`
 - Current branch at scan time: `lovedolove`
-- Latest scanned commit: `fbb2701 Refactor into modular architecture + add Low Latency Mode + reorganize menu`
+- Latest scanned commit: `d0b50e5 Fix VSVersionInfo deserialization: use str() not repr() for eval-safe format`
 - Latest repository scan: `2026-07-05`.
 - License: Apache License 2.0
 - Primary executable: `LDLWinToolBox.bat` thin launcher for `ldlwintoolbox.py` via `uv run -- python`
@@ -82,7 +82,7 @@ Implemented menu behavior (each feature in its own `features/*.py` file), groupe
 **Tools (20-22):**
 
 20. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
-21. Check for Updates: queries GitHub releases API, compares with local version (1.0.3), opens browser for download if newer.
+21. Check for Updates: queries GitHub releases API, compares with local version (1.0.7), opens browser for download if newer.
 22. Cleanup Exclusion List: manage JSON-based exclusion list in `config/exclusions.json`; paths matching exclusions are skipped during cleanup.
 
 23. Exit: asks Y/N confirmation, then closes the tool.
@@ -110,6 +110,12 @@ The user-listed feature targets below were implemented:
   `powershell -NoProfile -ExecutionPolicy Bypass -Command "try { iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex; exit 0 } catch { Write-Error $_; exit 1 }"`
 
 Treat the remote `iwr | iex` command as high risk. Do not execute it during analysis. The menu feature requires a clear warning, `KILL` confirmation, and logging.
+
+### 2026-07-05 — PyInstaller Version Fix (v1.0.7)
+
+- **Bug:** `repr(vers)` writes `versioninfo.VSVersionInfo(...)` (qualified names), but `load_version_info_from_text_file` calls `eval(text)` in `versioninfo.py` module scope where only unqualified names (`VSVersionInfo`, `FixedFileInfo`, etc.) exist — `versioninfo` is not importable from within the module.
+- **Fix:** Changed `repr(vers)` → `str(vers)` in `LDLWinToolBox.spec:57`. `str()` produces unqualified names matching the `pyi-grab_version` serialization format that `load_version_info_from_text_file` is designed to parse.
+- Bumped version to `1.0.7`, created PR #8 (release-1.0.7 → main), merged.
 
 ### 2026-07-05 (Python)
 
@@ -177,7 +183,7 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - `scripts/check.ps1` — unified ruff lint + format + import check runner
 - `.github/workflows/ci.yml` — CI workflow (Windows + ruff-action)
 - `.github/workflows/release.yml` — Release workflow (PyInstaller build + GitHub Release)
-- `LDLWinToolBox.spec` — PyInstaller spec for EXE packaging
+- `LDLWinToolBox.spec` — PyInstaller spec for EXE packaging; critical `str(vers)` vs `repr(vers)` fix applied after v1.0.6 release build failure
 - `README.md` — rewritten using `BLANK_README.md` (Best-README-Template) format, covering all 23 menu features, architecture, and production build info
 - `memory/2026-07-05.md` — updated with Production Version work log
 
@@ -212,3 +218,4 @@ Four-phase plan to move from feature-complete to production-ready. All phases co
 - C1: PyInstaller `.spec` at project root
 - C2: `.github/workflows/release.yml` — auto-build + release on version tag
 - C3: Version sourced from `pyproject.toml` via `tomllib` at runtime (`TOOLBOX_VERSION`)
+- C4 (fix): Version text serialization must use `str(vers)` not `repr(vers)` — see AGENTS.md for root cause. Release v1.0.5 and v1.0.6 builds failed without this fix. Fixed in v1.0.7.
