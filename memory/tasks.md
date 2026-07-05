@@ -1,13 +1,16 @@
 # memory/tasks.md
 
-Last updated: 2026-06-17
+Last updated: 2026-07-05
 
 ## Pending
 
-- No open items.
+- [ ] Overall user testing and feedback
 
 ## Completed
 
+- [x] 2026-07-05: Reorganized main menu into logical groups (Cleanup / Repair & Update / Network / Performance / Security & Privacy / Tools).
+- [x] 2026-07-05: Refactored monolithic `ldlwintoolbox.py` into `toolbox_base.py` + `features/` (one file per feature).
+- [x] 2026-07-05: Implemented Low Latency Mode with architecture detection, auto ViVeTool download/extraction, and sub-menu (query/enable/disable).
 - [x] 2026-06-17: Replaced the Log History `more` viewer with an internal paged console viewer so CMD stays open while browsing logs.
 - [x] 2026-06-16: Rescanned the current repository against the Python-first implementation and refreshed AGENTS.md, MEMORY.md, and memory history with the latest commit and guarded remote-script details.
 - [x] 2026-06-07: Scanned current repository logic, docs, prompt files, Git metadata, and issue templates.

@@ -41,20 +41,39 @@ On every new session:
 
 ## Current Implemented Features
 
-Current `ldlwintoolbox.py` menu implementation:
+Current modular implementation (`ldlwintoolbox.py` + `toolbox_base.py` + `features/`):
+
+### System Cleanup
 
 1. Advanced System Cleanup with a free-space calculator, Windows/user temp cleanup, `Prefetch`, `SoftwareDistribution\Download`, and vendor driver root cleanup.
-2. System Integrity Repair using `sfc /scannow` and `DISM /RestoreHealth`.
-3. Windows Component Store Cleanup using `DISM /StartComponentCleanup`.
-4. Update all installed apps using `winget upgrade --all`.
-5. Complete Network Reset using Winsock, TCP/IP reset, and DNS flush.
-6. Clear Event Viewer Logs using `wevtutil`.
+2. Windows Component Store Cleanup using `DISM /StartComponentCleanup`.
+3. Clear Event Viewer Logs using `wevtutil`.
+
+### System Repair & Update
+
+4. System Integrity Repair using `sfc /scannow` and `DISM /RestoreHealth`.
+5. Update all installed apps using `winget upgrade --all`.
+
+### Network
+
+6. Complete Network Reset using Winsock, TCP/IP reset, and DNS flush.
+
+### Performance
+
 7. Manual SSD TRIM using `defrag /L /V`.
-8. Disable BitLocker `(Plan)` using `manage-bde -status`, drive validation, `DISABLE` confirmation, and guarded `manage-bde -off <drive>:`.
-9. Kill Browser AI using the user-specified command:
+8. Low Latency Mode in `features/low_latency_mode.py` using ViVeTool (architecture detection, auto-download, sub-menu for query/enable/disable for feature IDs 58989092, 60716524, 61391826).
+
+### Security & Privacy
+
+9. Disable BitLocker `(Plan)` using `manage-bde -status`, drive validation, `DISABLE` confirmation, and guarded `manage-bde -off <drive>:`.
+10. Kill Browser AI using the user-specified command:
   `powershell -NoProfile -ExecutionPolicy Bypass -Command "try { iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex; exit 0 } catch { Write-Error $_; exit 1 }"`
-10. View Log History using a read-only paged console viewer for the newest `logs\LDLWinToolBox_*.log` files.
-11. Exit.
+
+### Tools
+
+11. View Log History using a read-only paged console viewer for the newest `logs\LDLWinToolBox_*.log` files.
+
+12. Exit.
 
 Remote script execution is high risk. Do not run this command during development. If it is implemented as a menu feature, add an explicit warning and confirmation before execution.
 

@@ -1,6 +1,6 @@
 # MEMORY.md
 
-Last updated: 2026-06-17
+Last updated: 2026-07-05 (modular refactor completed)
 
 ## User Preferences
 
@@ -18,7 +18,7 @@ Last updated: 2026-06-17
 - Git remote: `https://github.com/LoveDoLove/LDLWinToolBox.git`
 - Current branch at scan time: `lovedolove`
 - Latest scanned commit: `3b5e50e Complete toolbox safety features`
-- Latest repository scan: `2026-06-16`; the working tree was clean at the start of the documentation refresh.
+- Latest repository scan: `2026-07-05`.
 - License: Apache License 2.0
 - Primary executable: `LDLWinToolBox.bat` thin launcher for `ldlwintoolbox.py` via `uv run -- python`
 - Packaging metadata: `pyproject.toml`, `uv.lock`
@@ -34,6 +34,11 @@ Last updated: 2026-06-17
 
 `LDLWinToolBox.bat` is now a thin launcher that invokes `uv run -- python ldlwintoolbox.py`. The Python entry point initializes the menu, checks for Administrator access, relaunches with UAC when needed, prefers `uv` when available and falls back to `sys.executable`, switches to the script directory, and creates a timestamped structured log file named `logs\LDLWinToolBox_yyMMddHHmmss.log`.
 
+The project has been refactored into a modular structure:
+- `ldlwintoolbox.py` — thin entry point with admin logic and main menu dispatch
+- `toolbox_base.py` — shared infrastructure (Logger, CommandResult, run/command/prompt helpers)
+- `features/` — one file per feature, each importing only from `toolbox_base`
+
 Logging behavior:
 
 - Creates `logs\` automatically and falls back to the script directory if the log directory cannot be created.
@@ -43,29 +48,54 @@ Logging behavior:
 - Keeps raw command output in the same log file while keeping console output concise.
 - Provides a read-only Log History viewer that lists recent logs newest-first, caps the picker at the latest 9 entries, and opens a selected file with an internal paged console viewer.
 
-Implemented menu behavior:
+Implemented menu behavior (each feature in its own `features/*.py` file), grouped into logical categories:
 
-1. Advanced System Cleanup: calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads, and root driver folders such as `AMD`, `NVIDIA`, and `INTEL`; rebuilds temp directories; restarts services; reports MB freed. Event Viewer logs are intentionally handled by option 6 instead of direct file deletion.
-2. System Integrity Repair: asks confirmation, runs `sfc /scannow`, then `DISM /Online /Cleanup-Image /RestoreHealth`.
-3. Windows Component Store Cleanup: asks confirmation, runs `DISM.exe /Online /Cleanup-Image /StartComponentCleanup`.
-4. Update All Installed Apps: asks confirmation, runs `winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements`.
-5. Complete Network Reset: asks confirmation, runs `netsh winsock reset`, `netsh int ip reset`, and `ipconfig /flushdns`; tells user to restart.
-6. Clear Event Viewer Logs: enumerates all logs with `wevtutil.exe el` and clears each one with `wevtutil.exe cl`.
+**System Cleanup (1-3):**
+
+1. Advanced System Cleanup: calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads, and root driver folders such as `AMD`, `NVIDIA`, and `INTEL`; rebuilds temp directories; restarts services; reports MB freed. Event Viewer logs are intentionally handled by option 3 instead of direct file deletion.
+2. Windows Component Store Cleanup: asks confirmation, runs `DISM.exe /Online /Cleanup-Image /StartComponentCleanup`.
+3. Clear Event Viewer Logs: enumerates all logs with `wevtutil.exe el` and clears each one with `wevtutil.exe cl`.
+
+**System Repair & Update (4-5):**
+
+4. System Integrity Repair: asks confirmation, runs `sfc /scannow`, then `DISM /Online /Cleanup-Image /RestoreHealth`.
+5. Update All Installed Apps: asks confirmation, runs `winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements`.
+
+**Network (6):**
+
+6. Complete Network Reset: asks confirmation, runs `netsh winsock reset`, `netsh int ip reset`, and `ipconfig /flushdns`; tells user to restart.
+
+**Performance (7-8):**
+
 7. Manual SSD TRIM: lists volumes with PowerShell `Get-Volume`, sanitizes and validates a single drive letter, confirms the drive exists, runs `defrag <drive>: /L /V`, displays output, and appends it to the log.
-8. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
-9. Kill Browser AI: warns that it downloads and executes a remote PowerShell script, requires typing `KILL`, then launches PowerShell with `-ExecutionPolicy Bypass` and a guarded `try/catch` wrapper around the configured gist command so the result is logged.
-10. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
-11. Exit: closes the tool.
+8. Low Latency Mode: auto-detects CPU architecture (Intel/AMD x64 or Snapdragon ARM64), fetches the latest ViVeTool release from GitHub via API, downloads and extracts the matching ZIP to `tools/vivetool/`, and provides a sub-menu to query/enable/disable feature IDs 58989092, 60716524, and 61391826. Version caching avoids redundant downloads.
+
+**Security & Privacy (9-10):**
+
+9. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
+10. Kill Browser AI: warns that it downloads and executes a remote PowerShell script, requires typing `KILL`, then launches PowerShell with `-ExecutionPolicy Bypass` and a guarded `try/catch` wrapper around the configured gist command so the result is logged.
+
+**Tools (11):**
+
+11. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
+
+12. Exit: closes the tool.
 
 ## Implemented Feature Targets
 
-The user-listed feature targets below were implemented in `LDLWinToolBox.bat` on 2026-06-07:
+The user-listed feature targets below were implemented:
+
+### 2026-06-07 (Batch)
 
 - Disable BitLocker `[Plan]` with status display, drive validation, and `DISABLE` confirmation.
 - Kill Browser AI using:
   `powershell -NoProfile -ExecutionPolicy Bypass -Command "try { iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex; exit 0 } catch { Write-Error $_; exit 1 }"`
 
 Treat the remote `iwr | iex` command as high risk. Do not execute it during analysis. The menu feature requires a clear warning, `KILL` confirmation, and logging.
+
+### 2026-07-05 (Python)
+
+- Low Latency Mode: auto-detects `platform.machine()` → `IntelAmd` (AMD64/x86) or `SnapdragonArm64` (ARM64), fetches latest ViVe release from `api.github.com/repos/thebookisclosed/ViVe/releases/latest`, downloads matching ZIP via `urllib.request`, extracts with `zipfile` to `tools/vivetool/`, caches version in `version.txt`, provides sub-menu for `/query`, `/enable`, `/disable` on IDs 58989092, 60716524, 61391826.
 
 ## Documentation And Prompt Files
 
@@ -76,10 +106,35 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - `ANALYSIS.md` and `PROMPT_GUIDE.md` were not present in the latest working tree scan; if restored later, preserve their history and append updates.
 - Existing prompt rules emphasize auto-admin preservation, history preservation, input sanitization, clean verbosity, and long-running process warnings.
 
+## New Feature Details
+
+### Low Latency Mode (Menu 11)
+
+**Architecture detection:**
+- `platform.machine()` → `AMD64` → Intel/AMD x64
+- `platform.machine()` → `ARM64` → Snapdragon ARM64
+
+**ViVeTool management:**
+- Stores tool in `tools/vivetool/` under script directory
+- Caches version in `version.txt` to skip redundant downloads
+- Falls back to cached binary when GitHub API is unavailable
+
+**Sub-menu:**
+1. Check Status — runs `ViVeTool.exe /query /id:58989092,60716524,61391826`
+2. Enable — runs `ViVeTool.exe /enable /id:58989092,60716524,61391826` (with Y/N confirmation)
+3. Disable — runs `ViVeTool.exe /disable /id:58989092,60716524,61391826` (with Y/N confirmation)
+4. Return to Main Menu
+
+**Risks:**
+- Downloads binaries from GitHub; requires internet on first run
+- Feature ID changes in future Windows builds may require updates
+- Reboot may be required after changing low latency features
+
 ## Known Gaps And Risks
 
 - The current Python launcher/elevation flow uses `IsUserAnAdmin()` plus `ShellExecuteW(..., "runas", ...)`; keep both the `uv` and `sys.executable` launch paths working.
 - Cleanup no longer deletes Event Viewer log files directly; option 6 remains the safe `wevtutil` path for clearing logs.
+- No circular dependencies; each feature imports only from `toolbox_base`
 - The remote `kill_ai.ps1` gist was retrieved and reviewed on 2026-06-13; it disables Chrome and Edge on-device AI by applying registry policy keys and locking the `OptGuideOnDeviceModel` folders, but it still remains high risk and is only executed through the guarded PowerShell wrapper after explicit `KILL` confirmation.
 - `BLANK_README.md` is present locally but ignored by git and appears to be an unused Best-README-Template source file.
 - No tracked `.agents/skills/` directory exists at the 2026-06-16 scan; any future repo-local skill installation must clone a public GitHub source and record provenance.
