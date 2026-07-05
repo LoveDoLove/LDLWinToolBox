@@ -25,6 +25,7 @@ from features.log_viewer import log_history
 from features.low_latency_mode import low_latency_mode
 from features.network_reset import net_reset
 from features.network_snapshot import network_snapshot
+from features.self_update import self_update
 from features.service_health import service_health
 from features.ssd_trim import ssd_trim
 from features.system_cleanup import cleanup
@@ -93,8 +94,9 @@ def main_menu(logger: Logger, log_dir: Path) -> None:
         print("[18] Export Logs & Report")
         print(" ── Tools ──")
         print("[19] View Log History")
+        print("[20] Check for Updates")
         print("───────────────────────────────────────────────")
-        print("[20] Exit")
+        print("[21] Exit")
         print("===============================================")
         print(f"Log: {logger.logfile}")
         print("===============================================")
@@ -140,6 +142,8 @@ def main_menu(logger: Logger, log_dir: Path) -> None:
         elif choice == "19":
             log_history(logger, log_dir)
         elif choice == "20":
+            self_update(logger)
+        elif choice == "21":
             if not prompt_yes_no(
                 logger,
                 "Are you sure you want to exit? (Y/N): ",

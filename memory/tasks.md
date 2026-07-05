@@ -8,6 +8,7 @@ Last updated: 2026-07-05
 
 ## Completed
 
+- [x] 2026-07-05: Phase 5: Self-update check via GitHub releases API (menu 20). Bumped version to 1.0.3. Renumbered Exit to 21.
 - [x] 2026-07-05: Phase 4: Created 4 reporting features (disk_health, driver_inventory, network_snapshot, export_report). Renumbered menu (Exit: 16→20).
 - [x] 2026-07-05: Phase 3: Created 4 diagnostic features (system_info, windows_update, defender_tools, service_health) with read-only info + optional scan actions. Renumbered menu (Exit: 12→16).
 - [x] 2026-07-05: Phase 2: Added progress hints `[1/1]` to WinSxS / Winget, `[1/2][2/2]` to SFC+DISM; made vendor driver root deletion opt-in (Y/N) for conservative cleanup.

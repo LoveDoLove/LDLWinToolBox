@@ -35,11 +35,11 @@ Keep entries concise, append-friendly, and aligned with the Python-first, menu-d
 - [x] Network before/after snapshot (ipconfig/route/netsh/netstat capture + diff)
 - [x] Log export and archive bundle (#4+#5 combined: report generation + ZIP archive)
 
-### Phase 5: Efficiency & Maintenance
+### Phase 5: Efficiency & Maintenance ✅ (Partial)
 
-1. Reduce redundant PowerShell calls
-2. Add a read-only mode for status checks
-3. Version and update check for the toolbox itself
+- [x] Version and update check for the toolbox itself (GitHub releases API)
+- [ ] Reduce redundant PowerShell calls (deferred — low impact)
+- [ ] Add a read-only mode for status checks (deferred — needs launch-flow change)
 
 ### Phase 6: Advanced Features
 
@@ -61,7 +61,7 @@ Keep entries concise, append-friendly, and aligned with the Python-first, menu-d
 - Selective cleanup instead of fixed cleanup sets
 - Custom exclusion list for cleanup targets
 - Exportable report of actions and results
-- Version and update check for the toolbox itself
+- [x] Version and update check for the toolbox itself
 
 ## Optimizations
 

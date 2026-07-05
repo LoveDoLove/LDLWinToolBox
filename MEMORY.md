@@ -75,11 +75,12 @@ Implemented menu behavior (each feature in its own `features/*.py` file), groupe
 9. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, optional restore point, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
 10. Kill Browser AI: warns that it downloads and executes a remote PowerShell script, requires typing `KILL`, then launches PowerShell with `-ExecutionPolicy Bypass` and a guarded `try/catch` wrapper around the configured gist command so the result is logged.
 
-**Tools (15):**
+**Tools (19-20):**
 
-15. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
+19. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
+20. Check for Updates: queries GitHub releases API, compares with local version (1.0.3), opens browser for download if newer.
 
-20. Exit: asks Y/N confirmation, then closes the tool.
+21. Exit: asks Y/N confirmation, then closes the tool.
 
 **Diagnostics (11-18):**
 

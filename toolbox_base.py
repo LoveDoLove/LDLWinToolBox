@@ -12,6 +12,7 @@ from pathlib import Path
 
 
 MENU_LOGO = "=" * 47
+TOOLBOX_VERSION = "1.0.3"
 
 
 @dataclass(slots=True)
