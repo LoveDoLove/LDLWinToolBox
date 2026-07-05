@@ -35,7 +35,7 @@
 <h3 align="center">LDL Windows ToolBox</h3>
 
   <p align="center">
-    A cohesive, menu-driven Windows utility for system cleanup, repair, network reset, performance tuning, security management, diagnostics, recovery, and reporting — all in a single Python-first toolbox.
+    A cohesive, menu-driven Windows utility for system cleanup, repair, network reset, performance tuning, security management, diagnostics, recovery, and reporting.
     <br />
     <a href="https://github.com/LoveDoLove/LDLWinToolBox"><strong>Explore the docs »</strong></a>
     <br />
@@ -66,7 +66,6 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -78,17 +77,22 @@
 
 ## About The Project
 
-The LDL Windows ToolBox is a Python-first Windows utility powered by `uv`, with `LDLWinToolBox.bat` as a thin launcher for `ldlwintoolbox.py`. It combines administrative privilege elevation, system cleanup, repair flows, network reset, BitLocker planning, browser AI cleanup, SSD TRIM, low-latency configuration, recovery tools, diagnostics, and reporting into a single cohesive menu-driven interface.
+The LDL Windows ToolBox is a Python-first Windows utility that combines administrative privilege elevation, system cleanup, repair flows, network reset, BitLocker management, browser AI cleanup, SSD TRIM, low-latency configuration, recovery tools, diagnostics, and reporting into a single cohesive menu-driven interface.
 
-The project follows a modular architecture:
-- `LDLWinToolBox.bat` — thin Batch launcher for the Python entry point
-- `ldlwintoolbox.py` — entry point with admin detection, read-only mode, and main menu dispatch
-- `toolbox_base.py` — shared infrastructure (Logger, CommandResult, run/command/prompt/restore-point helpers)
+The project follows a modular file-per-feature architecture:
+
+- `LDLWinToolBox.bat` — thin Batch launcher invoking `uv run -- python ldlwintoolbox.py`
+- `ldlwintoolbox.py` — entry point with admin detection, read-only mode, and colored main menu dispatch
+- `toolbox_base.py` — shared infrastructure (Logger, CommandResult, ANSI Color, Spinner, run/command/prompt helpers)
 - `features/` — one file per feature, each importing only from `toolbox_base`
 - `config/exclusions.json` — user-managed exclusion list for cleanup operations
 - `logs/` — structured timestamped session logs
+- `scripts/check.ps1` — ruff lint + format check runner
+- `LDLWinToolBox.spec` — PyInstaller spec for EXE packaging
+- `.github/workflows/ci.yml` — CI workflow (ruff on push/PR)
+- `.github/workflows/release.yml` — Release workflow (PyInstaller build on version tag)
 
-The tool runs with zero external dependencies (Python standard library + built-in Windows commands). When launched without administrator privileges, it automatically enters **read-only mode**, hiding destructive features and allowing safe inspection of system information, diagnostics, and logs.
+The tool runs with zero external dependencies (Python standard library + built-in Windows commands + ANSI escape codes). When launched without administrator privileges, it automatically enters **read-only mode**, hiding destructive features and allowing safe inspection of system information, diagnostics, and logs.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -137,7 +141,7 @@ Upon launching, the interactive menu provides numbered options organized into lo
 - **[3] Clear Event Viewer Logs**: Flushes all Windows event logs via wevtutil.
 
 ### System Repair & Update (4–5)
-- **[4] System Integrity Repair (SFC + DISM)**: Scans and repairs corrupt OS files with SFC /scannow and DISM /RestoreHealth; shows [1/2] [2/2] progress hints.
+- **[4] System Integrity Repair (SFC + DISM)**: Scans and repairs corrupt OS files with SFC /scannow and DISM /RestoreHealth.
 - **[5] Update All Installed Apps**: Silently updates all winget-installed applications.
 
 ### Network (6)
@@ -166,29 +170,14 @@ Upon launching, the interactive menu provides numbered options organized into lo
 
 ### Tools (20–22)
 - **[20] View Log History**: Lists recent toolbox logs and opens the selected file with a paged console viewer.
-- **[21] Check for Updates**: Queries the GitHub Releases API, compares with local version (1.0.3), optionally opens browser for download.
+- **[21] Check for Updates**: Queries the GitHub Releases API, compares with local version, optionally opens browser for download.
 - **[22] Cleanup Exclusion List**: Manages a JSON-based exclusion list (`config/exclusions.json`); paths matching exclusions are skipped during cleanup.
 
 Each run writes a structured log under `logs/` with a session header, environment summary, section markers, user cancellations, command start/end markers, and exit codes. Long-running or destructive operations display warnings and require explicit (Y/N) confirmation. Optional system restore points can be created before destructive features.
 
-_For AI maintenance context and persistent project rules, refer to [AGENTS.md](AGENTS.md), [MEMORY.md](MEMORY.md), and [memory/tasks.md](memory/tasks.md)._
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- ROADMAP -->
-
-## Roadmap
-
-The project has completed all 6 planned development phases:
-
-- **Phase 1**: Foundation — shared helpers, input validation, confirmation flow, restore points
-- **Phase 2**: Safety & Clarity — progress hints, conservative cleanup defaults
-- **Phase 3**: New Feature Modules — system info, Windows Update, Defender, service health
-- **Phase 4**: Reporting & Export — disk SMART, driver inventory, network snapshot, log export
-- **Phase 5**: Efficiency & Maintenance — self-update check, read-only mode, PowerShell batching
-- **Phase 6**: Advanced Features — recovery tools, selective cleanup, exclusion list
-
-Future improvements are tracked as [open issues](https://github.com/LoveDoLove/LDLWinToolBox/issues) and in [memory/feature-ideas.md](memory/feature-ideas.md).
+See the [open issues](https://github.com/LoveDoLove/LDLWinToolBox/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

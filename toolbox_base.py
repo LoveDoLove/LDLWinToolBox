@@ -6,13 +6,81 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
 
 MENU_LOGO = "=" * 47
-TOOLBOX_VERSION = "1.0.3"
+
+class Color:
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+    DIM = "\033[2m"
+    RED = "\033[91m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    BLUE = "\033[94m"
+    MAGENTA = "\033[95m"
+    CYAN = "\033[96m"
+    WHITE = "\033[97m"
+    HEADER = "\033[105m\033[97m"
+
+
+def cprint(text: str, *styles: str, indent: int = 0) -> None:
+    prefix = " " * indent
+    joined = "".join(styles)
+    if joined:
+        print(f"{prefix}{joined}{text}{Color.RESET}")
+    else:
+        print(f"{prefix}{text}")
+
+
+class Spinner:
+    def __init__(self, message: str = "", delay: float = 0.15) -> None:
+        self._message = message
+        self._delay = delay
+        self._running = False
+        self._thread: threading.Thread | None = None
+
+    def __enter__(self) -> Spinner:
+        self._running = True
+        self._thread = threading.Thread(target=self._spin, daemon=True)
+        self._thread.start()
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self._running = False
+        if self._thread:
+            self._thread.join()
+        sys.stdout.write("\r" + " " * (len(self._message) + 4) + "\r")
+        sys.stdout.flush()
+
+    def _spin(self) -> None:
+        chars = "|/-\\"
+        i = 0
+        while self._running:
+            sys.stdout.write(f"\r{chars[i % len(chars)]} {self._message}")
+            sys.stdout.flush()
+            time.sleep(self._delay)
+            i += 1
+
+
+def _read_version() -> str:
+    try:
+        import tomllib
+        pyproject = Path(__file__).resolve().parent / "pyproject.toml"
+        if pyproject.exists():
+            data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+            return data.get("project", {}).get("version", "0.0.0")
+    except Exception:
+        pass
+    return "0.0.0"
+
+
+TOOLBOX_VERSION: str = _read_version()
 
 
 @dataclass(slots=True)

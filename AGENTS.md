@@ -39,15 +39,21 @@ On every new session:
 - Sanitize user input for every new menu feature that accepts values.
 - Keep existing documentation and analysis history intact. If `ANALYSIS.md` or `PROMPT_GUIDE.md` exists, append updates instead of replacing historical context.
 
-## Project Architecture
+## Project Architecture (Production)
 
 The project follows a modular file-per-feature architecture:
 
-- `ldlwintoolbox.py` — thin entry point with admin logic and main menu dispatch
+- `ldlwintoolbox.py` — thin entry point with admin logic and colored main menu dispatch
 - `LDLWinToolBox.bat` — thin launcher invoking `uv run -- python ldlwintoolbox.py`
-- `toolbox_base.py` — shared infrastructure (Logger, CommandResult, run/command/prompt helpers)
+- `toolbox_base.py` — shared infrastructure (Logger, CommandResult, Color, cprint, Spinner, run/command/prompt helpers)
 - `features/` — one file per feature, each importing only from `toolbox_base`
-- Zero external dependencies; all imports from Python stdlib
+- `scripts/check.ps1` — unified ruff lint + format check runner
+- `LDLWinToolBox.spec` — PyInstaller spec for EXE packaging
+- `.github/workflows/ci.yml` — CI (ruff on push/PR)
+- `.github/workflows/release.yml` — Release (PyInstaller build on tag)
+- `README.md` — project documentation written using the `BLANK_README.md` (Best-README-Template) format, covering all 23 menu features, architecture, and production build info
+- Zero external dependencies; all imports from Python stdlib; ANSI colors for UX
+- `TOOLBOX_VERSION` read dynamically from `pyproject.toml` via `tomllib`
 
 ## Current Implemented Features
 
@@ -76,11 +82,37 @@ The project follows a modular file-per-feature architecture:
 9. Disable BitLocker in `features/bitlocker_disable.py` using `manage-bde -status`, drive validation, optional restore point, `DISABLE` confirmation, and guarded `manage-bde -off <drive>:`.
 10. Kill Browser AI in `features/browser_ai_killer.py` using the configured remote PowerShell script.
 
-### Tools (11)
+### Recovery (11)
 
-11. View Log History in `features/log_viewer.py` using a read-only paged console viewer for the newest `logs\LDLWinToolBox_*.log` files.
+11. Recovery & Safe Mode Tools in `features/recovery_tools.py` with bcdedit boot config, safe mode (minimal/networking/cmd-prompt), WinRE status/enable/disable, restore normal boot.
 
-12. Exit with Y/N confirmation.
+### Diagnostics (12-19)
+
+12. System Information in `features/system_info.py` (OS, CPU, RAM, disk, uptime via ctypes+winreg).
+13. Windows Update Status in `features/windows_update.py` (service state, registry config, UsoClient scan).
+14. Defender Status & Quick Scan in `features/defender_tools.py` (Get-MpComputerStatus, MpCmdRun update, Start-MpQuickScan).
+15. Service Health Check in `features/service_health.py` (20 critical services via Get-Service/sc query).
+16. Disk Health & SMART Summary in `features/disk_health.py` (Get-PhysicalDisk + Get-StorageReliabilityCounter).
+17. Driver Inventory in `features/driver_inventory.py` (driverquery /FO CSV parsing).
+18. Network Snapshot in `features/network_snapshot.py` (ipconfig/route/netsh/netstat capture + diff).
+19. Export Logs & Report in `features/export_report.py` (session report + log ZIP archive).
+
+### Tools (20-22)
+
+20. View Log History in `features/log_viewer.py` using a read-only paged console viewer for the newest `logs\LDLWinToolBox_*.log` files.
+21. Check for Updates in `features/self_update.py` (GitHub releases API comparison).
+22. Cleanup Exclusion List in `features/cleanup_config.py` (JSON-based exclusion manager).
+
+23. Exit with Y/N confirmation.
+
+### Production Version Additions
+- `Color` class + `cprint()` for ANSI colored console output (zero deps)
+- `Spinner` context manager for long-running task progress indication (thread-based, zero deps)
+- `TOOLBOX_VERSION` dynamically read from `pyproject.toml` via `tomllib`
+- `scripts/check.ps1` — unified ruff linter + formatter runner
+- `LDLWinToolBox.spec` — PyInstaller spec for EXE packaging
+- `.github/workflows/ci.yml` — CI workflow (ruff on push/PR)
+- `.github/workflows/release.yml` — Release workflow (PyInstaller build on version tag)
 
 Remote script execution is high risk. Do not run this command during development. If it is implemented as a menu feature, add an explicit warning and confirmation before execution.
 

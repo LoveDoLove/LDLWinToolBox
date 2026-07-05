@@ -8,8 +8,11 @@ from datetime import datetime
 from pathlib import Path
 
 from toolbox_base import (
+    Color,
     Logger,
+    TOOLBOX_VERSION,
     clear_screen,
+    cprint,
     get_log_dir,
     prompt_yes_no,
     write_session_header,
@@ -56,54 +59,70 @@ def relaunch_as_admin() -> None:
     ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, params, None, 1)
 
 
+def _print_header(is_admin_user: bool) -> None:
+    B = Color.BOLD
+    C = Color.CYAN
+    Y = Color.YELLOW
+    cprint("─" * 47, Color.DIM)
+    cprint("       ⚙  LDL Windows ToolBox", B, C)
+    cprint(f"               v{TOOLBOX_VERSION}", Color.DIM)
+    if not is_admin_user:
+        cprint("          ★ READ-ONLY MODE ★", B, Y)
+    cprint("─" * 47, Color.DIM)
+
+
+def _print_section(title: str) -> None:
+    cprint(f" ── {title} ──", Color.BOLD, Color.GREEN)
+
+
+def _print_item(key: str, desc: str) -> None:
+    cprint(f" [{key}] {desc}", Color.WHITE)
+
+
 def main_menu(logger: Logger, log_dir: Path, script_dir: Path, is_admin_user: bool) -> None:
     while True:
         clear_screen()
-        print("===============================================")
-        print("           LDL Windows ToolBox")
-        if not is_admin_user:
-            print("          *** READ-ONLY MODE ***")
-        print("===============================================")
+        _print_header(is_admin_user)
         if is_admin_user:
-            print(" ── System Cleanup ──")
-            print("[1] Advanced System Cleanup")
-            print("[2] Windows Component Store Cleanup (WinSxS)")
-            print("[3] Clear Event Viewer Logs")
-            print(" ── System Repair & Update ──")
-            print("[4] System Integrity Repair (SFC + DISM)")
-            print("[5] Update All Installed Apps (Winget)")
-            print(" ── Network ──")
-            print("[6] Complete Network Reset")
-            print(" ── Performance ──")
-            print("[7] Manual SSD TRIM")
-            print("[8] Low Latency Mode (ViVeTool)")
-            print(" ── Security & Privacy ──")
-            print("[9] Disable BitLocker (Plan)")
-            print("[10] Kill Browser AI")
-            print(" ── Recovery ──")
-            print("[11] Recovery & Safe Mode Tools")
+            _print_section("System Cleanup")
+            _print_item("1", "Advanced System Cleanup")
+            _print_item("2", "Windows Component Store Cleanup (WinSxS)")
+            _print_item("3", "Clear Event Viewer Logs")
+            _print_section("System Repair & Update")
+            _print_item("4", "System Integrity Repair (SFC + DISM)")
+            _print_item("5", "Update All Installed Apps (Winget)")
+            _print_section("Network")
+            _print_item("6", "Complete Network Reset")
+            _print_section("Performance")
+            _print_item("7", "Manual SSD TRIM")
+            _print_item("8", "Low Latency Mode (ViVeTool)")
+            _print_section("Security & Privacy")
+            _print_item("9", "Disable BitLocker (Plan)")
+            _print_item("10", "Kill Browser AI")
+            _print_section("Recovery")
+            _print_item("11", "Recovery & Safe Mode Tools")
         else:
-            print("  (Admin features hidden. Press [R] to restart as admin.)")
-        print(" ── Diagnostics ──")
-        print("[12] System Information")
-        print("[13] Windows Update Status")
-        print("[14] Defender Status & Quick Scan")
-        print("[15] Service Health Check")
-        print("[16] Disk Health & SMART Summary")
-        print("[17] Driver Inventory")
-        print("[18] Network Snapshot")
-        print("[19] Export Logs & Report")
-        print(" ── Tools ──")
-        print("[20] View Log History")
-        print("[21] Check for Updates")
-        print("[22] Cleanup Exclusion List")
-        print("───────────────────────────────────────────────")
+            cprint("  (Admin features hidden. Press [R] to restart as admin.)", Color.DIM)
+        _print_section("Diagnostics")
+        _print_item("12", "System Information")
+        _print_item("13", "Windows Update Status")
+        _print_item("14", "Defender Status & Quick Scan")
+        _print_item("15", "Service Health Check")
+        _print_item("16", "Disk Health & SMART Summary")
+        _print_item("17", "Driver Inventory")
+        _print_item("18", "Network Snapshot")
+        _print_item("19", "Export Logs & Report")
+        _print_section("Tools")
+        _print_item("20", "View Log History")
+        _print_item("21", "Check for Updates")
+        _print_item("22", "Cleanup Exclusion List")
+        cprint(Color.DIM + "───────────────────────────────────────────────" + Color.RESET)
         if not is_admin_user:
-            print("[R] Restart as Administrator")
-        print("[23] Exit")
-        print("===============================================")
-        print(f"Log: {logger.logfile}")
-        print("===============================================")
+            cprint(" [R] Restart as Administrator", Color.YELLOW)
+        cprint(" [23] Exit", Color.RED)
+        cprint(Color.DIM + "═" * 47 + Color.RESET)
+        cprint(f" Log: {logger.logfile}", Color.DIM)
+        cprint(Color.DIM + "═" * 47 + Color.RESET)
         choice = input("Select an option: ").strip()
         logger.log_only("INFO", f"Menu selection: {choice}")
 

@@ -2,11 +2,24 @@
 
 Last updated: 2026-07-05
 
-## Pending
+## Pending (Production Version)
 
-- [ ] Phase 2+: System information summary, progress hints, Windows Update check, Defender check, service health, SMART summary, driver inventory, network snapshot, reduced PS calls, export report, self-update, selective cleanup, safe mode, read-only mode
+- [ ] Phase C1: PyInstaller spec 打包腳本
+- [ ] Phase C2: GitHub Release workflow (自動 build exe + upload)
+- [ ] Phase C3: 版本號統一從 pyproject.toml 讀取
 
 ## Completed
+
+- [x] 2026-07-05: Phase B3: 選單美化 + ANSI 彩色 + box-drawing + 版本號顯示
+- [x] 2026-07-05: Phase B2: 自製進度指示器 (spinner for long tasks)
+- [x] 2026-07-05: Phase B1: ANSI 彩色輸出基礎設施 (toolbox_base.py 色彩常數 + cprint)
+- [x] 2026-07-05: Phase A4: 建立 GitHub Actions CI workflow (.github/workflows/ci.yml)
+- [x] 2026-07-05: Phase A3: 建立 scripts/check.ps1 統一檢查腳本
+- [x] 2026-07-05: Phase A2: 補全所有 features/*.py 型別註解
+- [x] 2026-07-05: Phase A1: pyproject.toml 加入 Ruff 設定 (lint + format + isort)
+- [x] 2026-07-05: 寫入生產版本 (Production Version) 計劃到 MEMORY.md 與 tasks.md
+
+## Completed (Pre-Production)
 
 - [x] 2026-07-05: Phase 5 complete: Self-update check, read-only mode (diagnostics without admin), PowerShell calls batched (disk_health: 3→1).
 - [x] 2026-07-05: Phase 6: Recovery tools (bcdedit safe mode/WinRE), selective cleanup sub-menu, exclusion list manager (config/exclusions.json). Menu renumbered Exit to 23.

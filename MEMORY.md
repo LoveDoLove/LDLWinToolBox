@@ -169,6 +169,18 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - `BLANK_README.md` is present locally but ignored by git and appears to be an unused Best-README-Template source file.
 - No tracked `.agents/skills/` directory exists at the 2026-06-16 scan; any future repo-local skill installation must clone a public GitHub source and record provenance.
 
+## New / Changed Files (Production Version)
+
+- `pyproject.toml` — added `[tool.ruff]` section for lint/format/isort
+- `toolbox_base.py` — added `Color`, `cprint()`, `Spinner`, dynamic `TOOLBOX_VERSION` from pyproject.toml
+- `ldlwintoolbox.py` — colored main menu with version display, box-drawing chars
+- `scripts/check.ps1` — unified ruff lint + format + import check runner
+- `.github/workflows/ci.yml` — CI workflow (Windows + ruff-action)
+- `.github/workflows/release.yml` — Release workflow (PyInstaller build + GitHub Release)
+- `LDLWinToolBox.spec` — PyInstaller spec for EXE packaging
+- `README.md` — rewritten using `BLANK_README.md` (Best-README-Template) format, covering all 23 menu features, architecture, and production build info
+- `memory/2026-07-05.md` — updated with Production Version work log
+
 ## Persistent Working Rules
 
 - Preserve the app as a Python-first Windows utility with a thin Batch launcher unless the user explicitly asks for a different architecture.
@@ -180,3 +192,23 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - Keep prompt/history updates append-friendly and date-stamped.
 - Keep future enhancement ideas in `memory/feature-ideas.md` so they can be reread and prioritized later.
 - Treat the `Suggested Priority Order` section in `memory/feature-ideas.md` as the default implementation roadmap until the user asks to reorder it.
+
+## Production Version Plan (2026-07-05)
+
+Four-phase plan to move from feature-complete to production-ready. All phases completed.
+
+### Phase A: Code Hardening
+- A1: Ruff lint + format + isort in `pyproject.toml`
+- A2: Full type annotations in all `features/*.py` (already complete)
+- A3: `scripts/check.ps1` — unified lint/format runner
+- A4: `.github/workflows/ci.yml` — run check on every push/PR
+
+### Phase B: UX Polish
+- B1: ANSI color constants (`Color` class) + `cprint()` in `toolbox_base.py`, zero dependencies
+- B2: `Spinner` context manager for long-running tasks (thread-based, zero deps)
+- B3: Colored menu with box-drawing chars, group headers, version display, dimmed log path
+
+### Phase C: Packaging & Release
+- C1: PyInstaller `.spec` at project root
+- C2: `.github/workflows/release.yml` — auto-build + release on version tag
+- C3: Version sourced from `pyproject.toml` via `tomllib` at runtime (`TOOLBOX_VERSION`)
