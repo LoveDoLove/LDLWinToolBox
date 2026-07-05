@@ -4,7 +4,7 @@
 
 ## Agent Role
 
-You are the AI maintainer for `LDLWinToolBox`, a Python-first Windows utility with a thin Batch launcher for administrative cleanup, repair, update, network reset, log clearing, and SSD TRIM workflows.
+You are the AI maintainer for `LDLWinToolBox`, a Python-first Windows utility with a thin Batch launcher for administrative cleanup, repair, update, network reset, log clearing, SSD TRIM, and low-latency configuration workflows.
 
 Work from repository facts first. Preserve existing history and project decisions unless the user explicitly asks to replace them.
 
@@ -32,46 +32,53 @@ On every new session:
 - Keep the app menu-driven and suitable for Windows 10/11.
 - The script must auto-check Administrator permission and auto-request elevation with UAC before system-level operations.
 - Preserve timestamped structured logging under `logs\LDLWinToolBox_yyMMddHHmmss.log`.
-- Console output should stay concise and user-readable; raw command output should go to `!LOGFILE!`.
+- Console output should stay concise and user-readable; raw command output is routed through the Logger to the structured log file.
 - Logs should include a session header, feature sections, user cancellation notes, command start/end markers, and exit codes for key system commands.
 - Runtime logs are ignored by git through the existing `*.log` ignore rule.
 - Long-running or risky operations must warn the user, explain interrupt safety, and ask for `(Y/N)` confirmation.
 - Sanitize user input for every new menu feature that accepts values.
 - Keep existing documentation and analysis history intact. If `ANALYSIS.md` or `PROMPT_GUIDE.md` exists, append updates instead of replacing historical context.
 
+## Project Architecture
+
+The project follows a modular file-per-feature architecture:
+
+- `ldlwintoolbox.py` — thin entry point with admin logic and main menu dispatch
+- `LDLWinToolBox.bat` — thin launcher invoking `uv run -- python ldlwintoolbox.py`
+- `toolbox_base.py` — shared infrastructure (Logger, CommandResult, run/command/prompt helpers)
+- `features/` — one file per feature, each importing only from `toolbox_base`
+- Zero external dependencies; all imports from Python stdlib
+
 ## Current Implemented Features
 
-Current modular implementation (`ldlwintoolbox.py` + `toolbox_base.py` + `features/`):
+### System Cleanup (1-3)
 
-### System Cleanup
+1. Advanced System Cleanup in `features/system_cleanup.py` with free-space calculator, Windows/user temp cleanup, `Prefetch`, `SoftwareDistribution\Download`, and vendor driver root cleanup.
+2. Windows Component Store Cleanup in `features/winsxs_cleanup.py` using `DISM /StartComponentCleanup`.
+3. Clear Event Viewer Logs in `features/event_log_clear.py` using `wevtutil`.
 
-1. Advanced System Cleanup with a free-space calculator, Windows/user temp cleanup, `Prefetch`, `SoftwareDistribution\Download`, and vendor driver root cleanup.
-2. Windows Component Store Cleanup using `DISM /StartComponentCleanup`.
-3. Clear Event Viewer Logs using `wevtutil`.
+### System Repair & Update (4-5)
 
-### System Repair & Update
+4. System Integrity Repair in `features/system_repair.py` using `sfc /scannow` and `DISM /RestoreHealth`.
+5. Update all installed apps in `features/winget_upgrade.py` using `winget upgrade --all`.
 
-4. System Integrity Repair using `sfc /scannow` and `DISM /RestoreHealth`.
-5. Update all installed apps using `winget upgrade --all`.
+### Network (6)
 
-### Network
+6. Complete Network Reset in `features/network_reset.py` using Winsock, TCP/IP reset, and DNS flush.
 
-6. Complete Network Reset using Winsock, TCP/IP reset, and DNS flush.
+### Performance (7-8)
 
-### Performance
-
-7. Manual SSD TRIM using `defrag /L /V`.
+7. Manual SSD TRIM in `features/ssd_trim.py` using `defrag /L /V`.
 8. Low Latency Mode in `features/low_latency_mode.py` using ViVeTool (architecture detection, auto-download, sub-menu for query/enable/disable for feature IDs 58989092, 60716524, 61391826).
 
-### Security & Privacy
+### Security & Privacy (9-10)
 
-9. Disable BitLocker `(Plan)` using `manage-bde -status`, drive validation, `DISABLE` confirmation, and guarded `manage-bde -off <drive>:`.
-10. Kill Browser AI using the user-specified command:
-  `powershell -NoProfile -ExecutionPolicy Bypass -Command "try { iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex; exit 0 } catch { Write-Error $_; exit 1 }"`
+9. Disable BitLocker in `features/bitlocker_disable.py` using `manage-bde -status`, drive validation, `DISABLE` confirmation, and guarded `manage-bde -off <drive>:`.
+10. Kill Browser AI in `features/browser_ai_killer.py` using the configured remote PowerShell script.
 
-### Tools
+### Tools (11)
 
-11. View Log History using a read-only paged console viewer for the newest `logs\LDLWinToolBox_*.log` files.
+11. View Log History in `features/log_viewer.py` using a read-only paged console viewer for the newest `logs\LDLWinToolBox_*.log` files.
 
 12. Exit.
 
