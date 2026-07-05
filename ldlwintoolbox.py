@@ -16,6 +16,7 @@ from toolbox_base import (
 )
 from features.bitlocker_disable import bitlocker_disable
 from features.browser_ai_killer import kill_browser_ai
+from features.cleanup_config import cleanup_config
 from features.defender_tools import defender_tools
 from features.disk_health import disk_health
 from features.driver_inventory import driver_inventory
@@ -25,6 +26,7 @@ from features.log_viewer import log_history
 from features.low_latency_mode import low_latency_mode
 from features.network_reset import net_reset
 from features.network_snapshot import network_snapshot
+from features.recovery_tools import recovery_tools
 from features.self_update import self_update
 from features.service_health import service_health
 from features.ssd_trim import ssd_trim
@@ -83,20 +85,23 @@ def main_menu(logger: Logger, log_dir: Path) -> None:
         print(" ── Security & Privacy ──")
         print("[9] Disable BitLocker (Plan)")
         print("[10] Kill Browser AI")
+        print(" ── Recovery ──")
+        print("[11] Recovery & Safe Mode Tools")
         print(" ── Diagnostics ──")
-        print("[11] System Information")
-        print("[12] Windows Update Status")
-        print("[13] Defender Status & Quick Scan")
-        print("[14] Service Health Check")
-        print("[15] Disk Health & SMART Summary")
-        print("[16] Driver Inventory")
-        print("[17] Network Snapshot")
-        print("[18] Export Logs & Report")
+        print("[12] System Information")
+        print("[13] Windows Update Status")
+        print("[14] Defender Status & Quick Scan")
+        print("[15] Service Health Check")
+        print("[16] Disk Health & SMART Summary")
+        print("[17] Driver Inventory")
+        print("[18] Network Snapshot")
+        print("[19] Export Logs & Report")
         print(" ── Tools ──")
-        print("[19] View Log History")
-        print("[20] Check for Updates")
+        print("[20] View Log History")
+        print("[21] Check for Updates")
+        print("[22] Cleanup Exclusion List")
         print("───────────────────────────────────────────────")
-        print("[21] Exit")
+        print("[23] Exit")
         print("===============================================")
         print(f"Log: {logger.logfile}")
         print("===============================================")
@@ -124,26 +129,30 @@ def main_menu(logger: Logger, log_dir: Path) -> None:
         elif choice == "10":
             kill_browser_ai(logger)
         elif choice == "11":
-            system_info(logger)
+            recovery_tools(logger)
         elif choice == "12":
-            windows_update(logger)
+            system_info(logger)
         elif choice == "13":
-            defender_tools(logger)
+            windows_update(logger)
         elif choice == "14":
-            service_health(logger)
+            defender_tools(logger)
         elif choice == "15":
-            disk_health(logger)
+            service_health(logger)
         elif choice == "16":
-            driver_inventory(logger)
+            disk_health(logger)
         elif choice == "17":
-            network_snapshot(logger, script_dir)
+            driver_inventory(logger)
         elif choice == "18":
-            export_report(logger, log_dir)
+            network_snapshot(logger, script_dir)
         elif choice == "19":
-            log_history(logger, log_dir)
+            export_report(logger, log_dir)
         elif choice == "20":
-            self_update(logger)
+            log_history(logger, log_dir)
         elif choice == "21":
+            self_update(logger)
+        elif choice == "22":
+            cleanup_config(logger)
+        elif choice == "23":
             if not prompt_yes_no(
                 logger,
                 "Are you sure you want to exit? (Y/N): ",

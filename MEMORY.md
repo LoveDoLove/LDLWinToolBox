@@ -75,12 +75,17 @@ Implemented menu behavior (each feature in its own `features/*.py` file), groupe
 9. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, optional restore point, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
 10. Kill Browser AI: warns that it downloads and executes a remote PowerShell script, requires typing `KILL`, then launches PowerShell with `-ExecutionPolicy Bypass` and a guarded `try/catch` wrapper around the configured gist command so the result is logged.
 
-**Tools (19-20):**
+**Recovery (11):**
 
-19. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
-20. Check for Updates: queries GitHub releases API, compares with local version (1.0.3), opens browser for download if newer.
+11. Recovery & Safe Mode Tools: sub-menu for bcdedit boot config, safe mode (minimal/networking/cmd-prompt), WinRE status/enable/disable, restore normal boot, restart to recovery.
 
-21. Exit: asks Y/N confirmation, then closes the tool.
+**Tools (20-22):**
+
+20. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
+21. Check for Updates: queries GitHub releases API, compares with local version (1.0.3), opens browser for download if newer.
+22. Cleanup Exclusion List: manage JSON-based exclusion list in `config/exclusions.json`; paths matching exclusions are skipped during cleanup.
+
+23. Exit: asks Y/N confirmation, then closes the tool.
 
 **Diagnostics (11-18):**
 
@@ -92,6 +97,7 @@ Implemented menu behavior (each feature in its own `features/*.py` file), groupe
 16. Driver Inventory: parses driverquery /FO CSV output, shows all drivers with type/date summary.
 17. Network Snapshot: captures ipconfig/route/netsh/netstat state to file and log; optional diff against previous snapshot.
 18. Export Logs & Report: generates a plain-text session report (features run, commands, warnings) and archives all logs to ZIP.
+19. System Cleanup: now supports selective target sub-menu (Windows Temp, User Temp, Prefetch, SoftDist, Vendor Roots) with exclusion list integration.
 
 ## Implemented Feature Targets
 

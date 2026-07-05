@@ -41,11 +41,11 @@ Keep entries concise, append-friendly, and aligned with the Python-first, menu-d
 - [ ] Reduce redundant PowerShell calls (deferred — low impact)
 - [ ] Add a read-only mode for status checks (deferred — needs launch-flow change)
 
-### Phase 6: Advanced Features
+### Phase 6: Advanced Features ✅ (Complete)
 
-1. Selective cleanup instead of fixed cleanup sets
-2. Custom exclusion list for cleanup targets
-3. Safe Mode or recovery entry helpers
+- [x] Selective cleanup instead of fixed cleanup sets (sub-menu in system_cleanup)
+- [x] Custom exclusion list for cleanup targets (config/exclusions.json manager)
+- [x] Safe Mode or recovery entry helpers (bcdedit/reagentc/shutdown sub-menu)
 
 ## New Features
 
@@ -57,9 +57,9 @@ Keep entries concise, append-friendly, and aligned with the Python-first, menu-d
 - [x] Log export and archive bundle
 - [x] Network before/after snapshot
 - [x] Defender status check and quick scan entry
-- Safe Mode or recovery entry helpers
-- Selective cleanup instead of fixed cleanup sets
-- Custom exclusion list for cleanup targets
+- [x] Safe Mode or recovery entry helpers
+- [x] Selective cleanup instead of fixed cleanup sets
+- [x] Custom exclusion list for cleanup targets
 - Exportable report of actions and results
 - [x] Version and update check for the toolbox itself
 

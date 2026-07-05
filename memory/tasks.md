@@ -8,6 +8,7 @@ Last updated: 2026-07-05
 
 ## Completed
 
+- [x] 2026-07-05: Phase 6: Recovery tools (bcdedit safe mode/WinRE), selective cleanup sub-menu, exclusion list manager (config/exclusions.json). Menu renumbered Exit to 23.
 - [x] 2026-07-05: Phase 5: Self-update check via GitHub releases API (menu 20). Bumped version to 1.0.3. Renumbered Exit to 21.
 - [x] 2026-07-05: Phase 4: Created 4 reporting features (disk_health, driver_inventory, network_snapshot, export_report). Renumbered menu (Exit: 16→20).
 - [x] 2026-07-05: Phase 3: Created 4 diagnostic features (system_info, windows_update, defender_tools, service_health) with read-only info + optional scan actions. Renumbered menu (Exit: 12→16).
