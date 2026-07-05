@@ -12,8 +12,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
-
 MENU_LOGO = "=" * 47
+
 
 class Color:
     RESET = "\033[0m"
@@ -71,6 +71,7 @@ class Spinner:
 def _read_version() -> str:
     try:
         import tomllib
+
         pyproject = Path(__file__).resolve().parent / "pyproject.toml"
         if pyproject.exists():
             data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
@@ -152,9 +153,7 @@ def run_command(
         raise subprocess.CalledProcessError(
             completed.returncode, command, completed.stdout, completed.stderr
         )
-    return CommandResult(
-        completed.returncode, completed.stdout or "", completed.stderr or ""
-    )
+    return CommandResult(completed.returncode, completed.stdout or "", completed.stderr or "")
 
 
 def run_and_log(
@@ -205,9 +204,7 @@ def prompt_drive(logger: Logger, prompt: str, context: str) -> str | None:
 
 
 def select_existing_drive(logger: Logger, context: str) -> str | None:
-    choice = prompt_drive(
-        logger, "Press 0 to return, or drive letter to continue (A-Z): ", context
-    )
+    choice = prompt_drive(logger, "Press 0 to return, or drive letter to continue (A-Z): ", context)
     if choice is None:
         return None
     if choice == "":
@@ -245,7 +242,10 @@ def create_restore_point(logger: Logger, description: str) -> bool:
     stderr = result.stderr.strip()
     logger.log_only("WARN", f"Restore point failed (exit={rc}): {stderr or 'unknown error'}")
     if "0x80070422" in stderr:
-        print(">>> System Restore may be disabled. Enable it in System Properties to use this feature.")
+        print(
+            ">>> System Restore may be disabled. Enable it in System Properties"
+            " to use this feature."
+        )
     else:
         print(f">>> Restore point creation failed (exit={rc}). Continuing anyway.")
     return False

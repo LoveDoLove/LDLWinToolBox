@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import subprocess
 import winreg
 
 from toolbox_base import MENU_LOGO, Logger, clear_screen, command_exists, run_command
@@ -123,18 +122,19 @@ def windows_update(logger: Logger) -> None:
         "DeferQualityUpdates",
     )
     if deferred:
-        print(f"  Quality Updates   : Deferred")
+        print("  Quality Updates   : Deferred")
     else:
-        print(f"  Quality Updates   : Not deferred")
+        print("  Quality Updates   : Not deferred")
 
     if svc == "RUNNING" and last_install:
-        from datetime import datetime, timedelta
+        from datetime import datetime
 
         try:
             dt = datetime.strptime(last_install, "%Y-%m-%d %H:%M:%S")
             days_ago = (datetime.now() - dt).days
             if days_ago > 30:
-                print(f"  >>> Last update was {days_ago} days ago. Consider running [5] Winget upgrade.")
+                print(f"  >>> Last update was {days_ago} days ago.")
+                print("       Consider running [5] Winget upgrade.")
         except ValueError:
             pass
 

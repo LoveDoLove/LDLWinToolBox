@@ -31,11 +31,9 @@ def driver_inventory(logger: Logger) -> None:
         input("Press Enter to continue...")
         return
 
-    header = lines[0]
-    rows = lines[1:]
-
     import csv
     import io
+
     reader = csv.reader(io.StringIO(result.stdout))
     all_rows = list(reader)
     if len(all_rows) < 2:
@@ -61,7 +59,7 @@ def driver_inventory(logger: Logger) -> None:
     print(f"  Total drivers: {total}")
     print()
     print(f"  {'Driver Name':<35} {'Type':<18} {'Date':<20}")
-    print(f"  {'-'*35} {'-'*18} {'-'*20}")
+    print(f"  {'-' * 35} {'-' * 18} {'-' * 20}")
 
     for row in data_rows:
         name = row[name_idx] if len(row) > name_idx else "?"

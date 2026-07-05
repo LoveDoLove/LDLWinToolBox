@@ -82,7 +82,7 @@ def self_update(logger: Logger) -> None:
         print()
         if remote_body:
             short = remote_body.strip()[:500]
-            print(f"  Release notes:")
+            print("  Release notes:")
             for line in short.splitlines()[:10]:
                 print(f"    {line}")
         print()
@@ -99,6 +99,7 @@ def self_update(logger: Logger) -> None:
                 "Open Download Page",
             ):
                 import webbrowser
+
                 webbrowser.open(remote_url_page)
                 logger.log_only("INFO", f"Browser opened to {remote_url_page}")
         except Exception:

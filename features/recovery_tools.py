@@ -6,14 +6,14 @@ from toolbox_base import MENU_LOGO, Logger, clear_screen, command_exists, prompt
 def _bcdedit(args: list[str]) -> str:
     if not command_exists("bcdedit"):
         return ""
-    result = run_command(["bcdedit"] + args, capture=True)
+    result = run_command(["bcdedit", *args], capture=True)
     return result.stdout.strip() if result.code == 0 else f"(exit={result.code})"
 
 
 def _reagentc(args: list[str]) -> str:
     if not command_exists("reagentc"):
         return ""
-    result = run_command(["reagentc"] + args, capture=True)
+    result = run_command(["reagentc", *args], capture=True)
     return result.stdout.strip() if result.code == 0 else f"(exit={result.code})"
 
 
@@ -79,7 +79,9 @@ def recovery_tools(logger: Logger) -> None:
         elif choice == "4":
             logger.section("Safe Mode — Command Prompt")
             print("WARNING: This will set Safe Mode with Command Prompt on next restart.")
-            if prompt_yes_no(logger, "Set Safe Mode (Command Prompt)? (Y/N): ", "Safe Mode CmdPrompt"):
+            if prompt_yes_no(
+                logger, "Set Safe Mode (Command Prompt)? (Y/N): ", "Safe Mode CmdPrompt"
+            ):
                 output = _bcdedit(["/set", "{current}", "safeboot", "minimal"])
                 print(output)
                 out2 = _bcdedit(["/set", "{current}", "safebootalternateshell", "yes"])
@@ -118,11 +120,15 @@ def recovery_tools(logger: Logger) -> None:
             print()
             if command_exists("reagentc"):
                 logger.section("Enable / Disable WinRE")
-                if prompt_yes_no(logger, "Enable Windows Recovery Environment? (Y/N): ", "Enable WinRE"):
+                if prompt_yes_no(
+                    logger, "Enable Windows Recovery Environment? (Y/N): ", "Enable WinRE"
+                ):
                     out = _reagentc(["/enable"])
                     print(out)
                     logger.write_raw(out)
-                if prompt_yes_no(logger, "Disable Windows Recovery Environment? (Y/N): ", "Disable WinRE"):
+                if prompt_yes_no(
+                    logger, "Disable Windows Recovery Environment? (Y/N): ", "Disable WinRE"
+                ):
                     out = _reagentc(["/disable"])
                     print(out)
                     logger.write_raw(out)

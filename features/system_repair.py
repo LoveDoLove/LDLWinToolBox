@@ -27,9 +27,7 @@ def sys_repair(logger: Logger) -> None:
         "Restore Point - System Integrity Repair",
     ):
         create_restore_point(logger, "Before System Integrity Repair")
-    if not prompt_yes_no(
-        logger, "Do you want to proceed? (Y/N): ", "System Integrity Repair"
-    ):
+    if not prompt_yes_no(logger, "Do you want to proceed? (Y/N): ", "System Integrity Repair"):
         return
     steps = [
         (["sfc", "/scannow"], "System File Checker"),

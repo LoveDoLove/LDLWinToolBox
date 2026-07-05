@@ -18,9 +18,7 @@ def list_log_history(log_dir: Path, logger: Logger) -> list[Path]:
 
 def paginate_log_file(path: Path) -> None:
     try:
-        lines = path.read_text(
-            encoding="utf-8", errors="replace"
-        ).splitlines()
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
     except OSError as exc:
         print(f"Unable to open log file: {exc}")
         input("Press Enter to continue...")
@@ -58,9 +56,7 @@ def paginate_log_file(path: Path) -> None:
             input("End of log. Press Enter to return to the menu...")
             return
 
-        choice = (
-            input("Press Enter for more, [B]ack, or [Q]uit: ").strip().upper()
-        )
+        choice = input("Press Enter for more, [B]ack, or [Q]uit: ").strip().upper()
         if choice == "Q":
             return
         if choice == "B":
@@ -84,12 +80,8 @@ def log_history(logger: Logger, log_dir: Path) -> None:
         return
     for idx, path in enumerate(logs, start=1):
         stat = path.stat()
-        ts = datetime.fromtimestamp(stat.st_mtime).strftime(
-            "%Y-%m-%d %H:%M"
-        )
-        print(
-            f"[{idx}] {path.name} - {stat.st_size} bytes - {ts}"
-        )
+        ts = datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M")
+        print(f"[{idx}] {path.name} - {stat.st_size} bytes - {ts}")
     print()
     print("[0] Return to Menu")
     choice = input("Press 0 to return, or 1-9 to view a log: ").strip()
@@ -113,8 +105,6 @@ def log_history(logger: Logger, log_dir: Path) -> None:
     print(MENU_LOGO)
     print(f"Path: {selected}")
     print(MENU_LOGO)
-    logger.log_only(
-        "INFO", f"Viewing log history file: {selected.name}"
-    )
+    logger.log_only("INFO", f"Viewing log history file: {selected.name}")
     paginate_log_file(selected)
     logger.log("INFO", "View Log History returned to menu.")

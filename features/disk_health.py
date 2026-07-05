@@ -45,7 +45,8 @@ def disk_health(logger: Logger) -> None:
         "if(-not $d){Write-Output 'NO_DATA'}\n"
         "# VOLUMES\n"
         "Get-Volume | Where-Object {$_.DriveType -eq 'Fixed' -and $_.DriveLetter} "
-        "| ForEach-Object {Write-Output ($_.DriveLetter+':|'+$_.FileSystem+'|'+$_.HealthStatus+'|'+$_.SizeRemaining+'|'+$_.Size)}\n"
+        "| ForEach-Object {Write-Output ($_.DriveLetter+':|'+$_.FileSystem+'|'+"
+        "$_.HealthStatus+'|'+$_.SizeRemaining+'|'+$_.Size)}\n"
         "# SMART\n"
         "Get-PhysicalDisk | Get-StorageReliabilityCounter -ErrorAction SilentlyContinue "
         "| ForEach-Object {Write-Output ($_.DeviceId+'|'+$_.Temperature+'|'+"
@@ -62,13 +63,15 @@ def disk_health(logger: Logger) -> None:
         ps_fb = (
             "Get-PSDrive -PSProvider FileSystem "
             "| Where-Object {$_.Root -match '^[A-Z]:\\\\$'} "
-            "| ForEach-Object {Write-Output ($_.Root+'|'+[math]::Round($_.Used/1GB,1).ToString()+'/'+"
-            "[math]::Round(($_.Used+$_.Free)/1GB,1).ToString()+'GB|'+[math]::Round($_.Free/1GB,1).ToString()+'GB')}"
+            "| ForEach-Object {Write-Output ($_.Root+'|'+"
+            "[math]::Round($_.Used/1GB,1).ToString()+'/'+"
+            "[math]::Round(($_.Used+$_.Free)/1GB,1).ToString()+'GB|'+"
+            "[math]::Round($_.Free/1GB,1).ToString()+'GB')}"
         )
         fb_raw = _run_ps(ps_fb)
         if fb_raw:
             print(f"  {'Drive':<8} {'Used/Total':<22} {'Free':<10}")
-            print(f"  {'-'*8} {'-'*22} {'-'*10}")
+            print(f"  {'-' * 8} {'-' * 22} {'-' * 10}")
             for line in fb_raw.splitlines():
                 parts = line.strip().split("|")
                 if len(parts) >= 3:
@@ -100,13 +103,22 @@ def disk_health(logger: Logger) -> None:
         return
 
     if disk_lines:
-        print(f"  {'Name':<30} {'Type':<12} {'Health':<12} {'Size':<10} {'Status':<14} {'Bus':<10} {'Temp':<8} {'Wear':<8} {'ReadErr':<8} {'WriteErr':<8}")
-        print(f"  {'-'*30} {'-'*12} {'-'*12} {'-'*10} {'-'*14} {'-'*10} {'-'*8} {'-'*8} {'-'*8} {'-'*8}")
+        print(
+            f"  {'Name':<30} {'Type':<12} {'Health':<12} {'Size':<10} {'Status':<14} "
+            f"{'Bus':<10} {'Temp':<8} {'Wear':<8} {'ReadErr':<8} {'WriteErr':<8}"
+        )
+        print(
+            f"  {'-' * 30} {'-' * 12} {'-' * 12} {'-' * 10} {'-' * 14} "
+            f"{'-' * 10} {'-' * 8} {'-' * 8} {'-' * 8} {'-' * 8}"
+        )
         for line in disk_lines:
             parts = line.split("|")
             if len(parts) >= 10:
                 name, media, health, size, op_status, bus, temp, wear, re, we = parts[:10]
-                print(f"  {name:<30} {media:<12} {health:<12} {size:<10} {op_status:<14} {bus:<10} {temp:<8} {wear:<8} {re:<8} {we:<8}")
+                print(
+                    f"  {name:<30} {media:<12} {health:<12} {size:<10} {op_status:<14} "
+                    f"{bus:<10} {temp:<8} {wear:<8} {re:<8} {we:<8}"
+                )
                 logger.log_only("INFO", f"Disk: {name} health={health} wear={wear} temp={temp}")
 
     vol_lines = sections.get("VOLUMES", [])
@@ -114,7 +126,7 @@ def disk_health(logger: Logger) -> None:
         print()
         logger.section("Volume Summary")
         print(f"  {'Volume':<8} {'FS':<8} {'Health':<12} {'Free':<12} {'Total':<12}")
-        print(f"  {'-'*8} {'-'*8} {'-'*12} {'-'*12} {'-'*12}")
+        print(f"  {'-' * 8} {'-' * 8} {'-' * 12} {'-' * 12} {'-' * 12}")
         for line in vol_lines:
             parts = line.split("|")
             if len(parts) >= 5:
@@ -130,13 +142,21 @@ def disk_health(logger: Logger) -> None:
     if smart_lines:
         print()
         logger.section("SMART Reliability Counters")
-        print(f"  {'Disk#':<8} {'Temp(C)':<10} {'Wear%':<8} {'ReadErr':<10} {'WriteErr':<10} {'RdLat(ms)':<12} {'WrLat(ms)':<12} {'FlLat(ms)':<12}")
-        print(f"  {'-'*8} {'-'*10} {'-'*8} {'-'*10} {'-'*10} {'-'*12} {'-'*12} {'-'*12}")
+        print(
+            f"  {'Disk#':<8} {'Temp(C)':<10} {'Wear%':<8} {'ReadErr':<10} "
+            f"{'WriteErr':<10} {'RdLat(ms)':<12} {'WrLat(ms)':<12} {'FlLat(ms)':<12}"
+        )
+        print(
+            f"  {'-' * 8} {'-' * 10} {'-' * 8} {'-' * 10} {'-' * 10} "
+            f"{'-' * 12} {'-' * 12} {'-' * 12}"
+        )
         for line in smart_lines:
             parts = line.split("|")
             if len(parts) >= 8:
                 did, temp, wear, re, we, rl, wl, fl = parts[:8]
-                print(f"  {did:<8} {temp:<10} {wear:<8} {re:<10} {we:<10} {rl:<12} {wl:<12} {fl:<12}")
+                print(
+                    f"  {did:<8} {temp:<10} {wear:<8} {re:<10} {we:<10} {rl:<12} {wl:<12} {fl:<12}"
+                )
 
     logger.log_only("INFO", "DISK HEALTH CHECK COMPLETE")
     input("Press Enter to continue...")

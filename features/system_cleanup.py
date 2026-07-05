@@ -31,6 +31,7 @@ def drive_free_mb() -> int:
 def _is_excluded(target: Path) -> bool:
     try:
         from features.cleanup_config import is_excluded
+
         return is_excluded(target)
     except Exception:
         return False
@@ -133,8 +134,13 @@ def cleanup(logger: Logger) -> None:
     if is_all:
         selected_names = list(targets.keys())
     else:
-        name_map = {"2": "WindowsTemp", "3": "UserTemp", "4": "Prefetch",
-                     "5": "SoftwareDistribution", "6": "VendorRoots"}
+        name_map = {
+            "2": "WindowsTemp",
+            "3": "UserTemp",
+            "4": "Prefetch",
+            "5": "SoftwareDistribution",
+            "6": "VendorRoots",
+        }
         selected_names = [name_map[target_choice]]
 
     clear_screen()
@@ -160,7 +166,9 @@ def cleanup(logger: Logger) -> None:
     free_before = drive_free_mb()
     logger.log_only("INFO", f"Free space before cleanup: {free_before} MB")
 
-    if is_all or any(n in selected_names for n in ("WindowsTemp", "UserTemp", "SoftwareDistribution")):
+    if is_all or any(
+        n in selected_names for n in ("WindowsTemp", "UserTemp", "SoftwareDistribution")
+    ):
         _stop_services(logger)
 
     print()
@@ -170,7 +178,11 @@ def cleanup(logger: Logger) -> None:
     for name in selected_names:
         if name == "VendorRoots":
             if is_all:
-                if prompt_yes_no(logger, "Remove vendor driver directories (AMD, NVIDIA, INTEL)? (Y/N): ", "Vendor Driver Cleanup"):
+                if prompt_yes_no(
+                    logger,
+                    "Remove vendor driver directories (AMD, NVIDIA, INTEL)? (Y/N): ",
+                    "Vendor Driver Cleanup",
+                ):
                     clean_dirs.extend(targets["VendorRoots"])
             else:
                 clean_dirs.extend(targets["VendorRoots"])
@@ -197,7 +209,9 @@ def cleanup(logger: Logger) -> None:
                     if d is not None:
                         _rebuild_dir(d, logger)
 
-    if is_all or any(n in selected_names for n in ("WindowsTemp", "UserTemp", "SoftwareDistribution")):
+    if is_all or any(
+        n in selected_names for n in ("WindowsTemp", "UserTemp", "SoftwareDistribution")
+    ):
         print()
         _start_services(logger)
 

@@ -10,7 +10,6 @@ from toolbox_base import (
     command_exists,
     create_restore_point,
     prompt_yes_no,
-    run_and_log,
     run_command,
     select_existing_drive,
 )
@@ -23,9 +22,7 @@ def get_volume_table() -> str:
         "FileSystemLabel, @{Name='Size(GB)';Expression={[math]::round($_.Size / 1GB, 2)}} "
         "| Format-Table -AutoSize"
     )
-    result = run_command(
-        ["powershell", "-NoProfile", "-Command", ps], capture=True
-    )
+    result = run_command(["powershell", "-NoProfile", "-Command", ps], capture=True)
     return (result.stdout or "") + (result.stderr or "")
 
 
@@ -54,9 +51,7 @@ def ssd_trim(logger: Logger) -> None:
     if drive is None:
         return
     if drive == "":
-        logger.log(
-            "ERROR", "No valid drive was selected for Manual SSD TRIM."
-        )
+        logger.log("ERROR", "No valid drive was selected for Manual SSD TRIM.")
         input("Press Enter to continue...")
         return
     logger.log_only("INFO", f"Selected TRIM drive: {drive}:")

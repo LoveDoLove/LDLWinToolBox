@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-import subprocess
-
 from toolbox_base import MENU_LOGO, Logger, clear_screen, command_exists, run_command
-
 
 _CRITICAL_SERVICES = [
     ("wuauserv", "Windows Update"),
@@ -86,7 +83,7 @@ def service_health(logger: Logger) -> None:
     ps_status = _get_services_ps(names)
 
     print(f"  {'Status':<15} {'Service Name':<20} {'Display Name':<40}")
-    print(f"  {'-'*15} {'-'*20} {'-'*40}")
+    print(f"  {'-' * 15} {'-' * 20} {'-' * 40}")
 
     running = 0
     stopped = 0

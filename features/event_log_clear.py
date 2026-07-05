@@ -43,8 +43,6 @@ def event_logs(logger: Logger) -> None:
     logs = [line.strip() for line in result.stdout.splitlines() if line.strip()]
     for entry in logs:
         logger.log("INFO", f"- Clearing log: {entry}")
-        run_and_log(
-            logger, ["wevtutil", "cl", entry], f"wevtutil.exe cl {entry}"
-        )
+        run_and_log(logger, ["wevtutil", "cl", entry], f"wevtutil.exe cl {entry}")
     logger.log("INFO", "EVENT LOGS CLEARED")
     input("Press Enter to continue...")

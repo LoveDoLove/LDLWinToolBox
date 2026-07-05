@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from datetime import datetime
 from pathlib import Path
 
@@ -70,9 +69,13 @@ def network_snapshot(logger: Logger, script_dir: Path | None = None) -> None:
 
     print("  Current Network State:")
     print()
-    ip_lines = [l for l in lines if "IPv4 Address" in l or "Default Gateway" in l or "DNS Servers" in l]
-    for l in ip_lines[:10]:
-        print(f"    {l.strip()}")
+    ip_lines = [
+        line
+        for line in lines
+        if "IPv4 Address" in line or "Default Gateway" in line or "DNS Servers" in line
+    ]
+    for line in ip_lines[:10]:
+        print(f"    {line.strip()}")
     print()
     print(f"  Full snapshot saved to log ({len(lines)} lines).")
 
@@ -99,13 +102,16 @@ def network_snapshot(logger: Logger, script_dir: Path | None = None) -> None:
             prev_text = prev_snap.read_text(encoding="utf-8", errors="replace")
             curr_text = output
             import difflib
-            diff = list(difflib.unified_diff(
-                prev_text.splitlines(),
-                curr_text.splitlines(),
-                fromfile=prev_snap.name,
-                tofile=snap_file.name,
-                lineterm="",
-            ))
+
+            diff = list(
+                difflib.unified_diff(
+                    prev_text.splitlines(),
+                    curr_text.splitlines(),
+                    fromfile=prev_snap.name,
+                    tofile=snap_file.name,
+                    lineterm="",
+                )
+            )
             if diff:
                 print()
                 print("  --- Differences from previous snapshot ---")

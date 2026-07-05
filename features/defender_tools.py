@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import subprocess
-
 from toolbox_base import MENU_LOGO, Logger, clear_screen, command_exists, prompt_yes_no, run_command
 
 
@@ -50,7 +48,7 @@ def _show_defender_status(logger: Logger) -> None:
         "Last Full Scan Source",
     ]
     print(f"  {'Status Field':<30} {'Value':<20}")
-    print(f"  {'-'*30} {'-'*20}")
+    print(f"  {'-' * 30} {'-' * 20}")
     for field, val in zip(fields, lines):
         display = val if val else "N/A"
         print(f"  {field:<30} {display:<20}")

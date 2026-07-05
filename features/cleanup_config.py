@@ -6,7 +6,6 @@ from pathlib import Path
 
 from toolbox_base import MENU_LOGO, Logger, clear_screen
 
-
 _CONFIG_DIR: str | None = None
 
 
@@ -112,7 +111,10 @@ def cleanup_config(logger: Logger) -> None:
                 input("Press Enter to continue...")
                 continue
             resolved = _path_resolve(path)
-            if any(e.lower() == path.lower() or _path_resolve(e).lower() == resolved.lower() for e in exclusions):
+            if any(
+                e.lower() == path.lower() or _path_resolve(e).lower() == resolved.lower()
+                for e in exclusions
+            ):
                 print(f"'{path}' is already in the exclusion list.")
                 input("Press Enter to continue...")
                 continue
@@ -154,6 +156,7 @@ def cleanup_config(logger: Logger) -> None:
                 continue
             logger.section("Clear All Exclusions")
             from toolbox_base import prompt_yes_no
+
             if prompt_yes_no(logger, "Clear all exclusions? (Y/N): ", "Clear Exclusions"):
                 if _save_exclusions([]):
                     logger.log("INFO", "All exclusions cleared.")

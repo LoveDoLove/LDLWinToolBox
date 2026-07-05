@@ -7,16 +7,6 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from toolbox_base import (
-    Color,
-    Logger,
-    TOOLBOX_VERSION,
-    clear_screen,
-    cprint,
-    get_log_dir,
-    prompt_yes_no,
-    write_session_header,
-)
 from features.bitlocker_disable import bitlocker_disable
 from features.browser_ai_killer import kill_browser_ai
 from features.cleanup_config import cleanup_config
@@ -39,6 +29,16 @@ from features.system_repair import sys_repair
 from features.windows_update import windows_update
 from features.winget_upgrade import app_update
 from features.winsxs_cleanup import component_store_cleanup
+from toolbox_base import (
+    TOOLBOX_VERSION,
+    Color,
+    Logger,
+    clear_screen,
+    cprint,
+    get_log_dir,
+    prompt_yes_no,
+    write_session_header,
+)
 
 
 def is_admin() -> bool:
@@ -60,14 +60,14 @@ def relaunch_as_admin() -> None:
 
 
 def _print_header(is_admin_user: bool) -> None:
-    B = Color.BOLD
-    C = Color.CYAN
-    Y = Color.YELLOW
+    bold = Color.BOLD
+    cyan = Color.CYAN
+    yellow = Color.YELLOW
     cprint("─" * 47, Color.DIM)
-    cprint("       ⚙  LDL Windows ToolBox", B, C)
+    cprint("       ⚙  LDL Windows ToolBox", bold, cyan)
     cprint(f"               v{TOOLBOX_VERSION}", Color.DIM)
     if not is_admin_user:
-        cprint("          ★ READ-ONLY MODE ★", B, Y)
+        cprint("          ★ READ-ONLY MODE ★", bold, yellow)
     cprint("─" * 47, Color.DIM)
 
 
@@ -131,7 +131,19 @@ def main_menu(logger: Logger, log_dir: Path, script_dir: Path, is_admin_user: bo
             relaunch_as_admin()
             continue
 
-        if not is_admin_user and choice in ("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"):
+        if not is_admin_user and choice in (
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+        ):
             logger.log("WARN", f"Admin feature {choice} blocked in read-only mode.")
             print("This feature requires administrator privileges.")
             input("Press Enter to continue...")

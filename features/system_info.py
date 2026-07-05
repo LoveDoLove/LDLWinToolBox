@@ -4,11 +4,9 @@ import ctypes
 import os
 import platform
 import shutil
-import subprocess
 import winreg
-from datetime import datetime
 
-from toolbox_base import MENU_LOGO, Logger, clear_screen, command_exists, run_command
+from toolbox_base import MENU_LOGO, Logger, clear_screen
 
 
 class _MEMORYSTATUSEX(ctypes.Structure):
@@ -74,23 +72,32 @@ def system_info(logger: Logger) -> None:
 
     kernel32 = ctypes.windll.kernel32
 
-    os_edition = _reg_str(
-        winreg.HKEY_LOCAL_MACHINE,
-        r"SOFTWARE\Microsoft\Windows NT\CurrentVersion",
-        "ProductName",
-    ) or platform.system()
-    os_build = _reg_str(
-        winreg.HKEY_LOCAL_MACHINE,
-        r"SOFTWARE\Microsoft\Windows NT\CurrentVersion",
-        "CurrentBuild",
-    ) or platform.version()
+    os_edition = (
+        _reg_str(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SOFTWARE\Microsoft\Windows NT\CurrentVersion",
+            "ProductName",
+        )
+        or platform.system()
+    )
+    os_build = (
+        _reg_str(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"SOFTWARE\Microsoft\Windows NT\CurrentVersion",
+            "CurrentBuild",
+        )
+        or platform.version()
+    )
     os_display = f"{os_edition} (Build {os_build})"
 
-    cpu_name = _reg_str(
-        winreg.HKEY_LOCAL_MACHINE,
-        r"HARDWARE\DESCRIPTION\System\CentralProcessor\0",
-        "ProcessorNameString",
-    ) or platform.processor()
+    cpu_name = (
+        _reg_str(
+            winreg.HKEY_LOCAL_MACHINE,
+            r"HARDWARE\DESCRIPTION\System\CentralProcessor\0",
+            "ProcessorNameString",
+        )
+        or platform.processor()
+    )
     cpu_cores = os.cpu_count() or 0
     cpu_display = f"{cpu_name} ({cpu_cores} logical cores)"
 
@@ -109,7 +116,10 @@ def system_info(logger: Logger) -> None:
     disk_free = du.free
     disk_used = du.total - du.free
     disk_pct = du.used * 100 // du.total
-    disk_display = f"{_fmt_bytes(disk_used)} / {_fmt_bytes(disk_total)} ({disk_pct}% used), {_fmt_bytes(disk_free)} free"
+    disk_display = (
+        f"{_fmt_bytes(disk_used)} / {_fmt_bytes(disk_total)} "
+        f"({disk_pct}% used), {_fmt_bytes(disk_free)} free"
+    )
 
     uptime_ms = kernel32.GetTickCount64()
     uptime_display = _fmt_uptime(uptime_ms)

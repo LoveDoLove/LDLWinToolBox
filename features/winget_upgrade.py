@@ -27,9 +27,7 @@ def app_update(logger: Logger) -> None:
         "Restore Point - Update Installed Apps",
     ):
         create_restore_point(logger, "Before Winget App Upgrade")
-    if not prompt_yes_no(
-        logger, "Do you want to proceed? (Y/N): ", "Update Installed Apps"
-    ):
+    if not prompt_yes_no(logger, "Do you want to proceed? (Y/N): ", "Update Installed Apps"):
         return
     if not command_exists("winget"):
         logger.log(

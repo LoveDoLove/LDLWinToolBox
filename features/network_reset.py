@@ -26,9 +26,7 @@ def net_reset(logger: Logger) -> None:
         "Restore Point - Complete Network Reset",
     ):
         create_restore_point(logger, "Before Network Reset")
-    if not prompt_yes_no(
-        logger, "Do you want to proceed? (Y/N): ", "Complete Network Reset"
-    ):
+    if not prompt_yes_no(logger, "Do you want to proceed? (Y/N): ", "Complete Network Reset"):
         return
     for cmd, label in (
         (["netsh", "winsock", "reset"], "netsh winsock reset"),
@@ -47,7 +45,5 @@ def net_reset(logger: Logger) -> None:
             label.replace("netsh ", "Resetting ").replace("ipconfig ", "Flushing "),
         )
         run_and_log(logger, cmd, label)
-    logger.log(
-        "INFO", "NETWORK RESET COMPLETE. Please RESTART your computer."
-    )
+    logger.log("INFO", "NETWORK RESET COMPLETE. Please RESTART your computer.")
     input("Press Enter to continue...")
