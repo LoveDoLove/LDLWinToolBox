@@ -5,6 +5,7 @@ from toolbox_base import (
     Logger,
     clear_screen,
     command_exists,
+    prompt_yes_no,
     run_and_log,
     run_command,
 )
@@ -24,6 +25,12 @@ def event_logs(logger: Logger) -> None:
             "wevtutil.exe is required for Event Viewer logs, but it was not found.",
         )
         input("Press Enter to continue...")
+        return
+    if not prompt_yes_no(
+        logger,
+        "Clear all Event Viewer logs? (Y/N): ",
+        "Clear Event Viewer Logs",
+    ):
         return
     result = run_command(["wevtutil", "el"], capture=True)
     logs = [line.strip() for line in result.stdout.splitlines() if line.strip()]

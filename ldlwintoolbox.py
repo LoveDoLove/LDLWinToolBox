@@ -11,6 +11,7 @@ from toolbox_base import (
     Logger,
     clear_screen,
     get_log_dir,
+    prompt_yes_no,
     write_session_header,
 )
 from features.bitlocker_disable import bitlocker_disable
@@ -106,6 +107,12 @@ def main_menu(logger: Logger, log_dir: Path) -> None:
         elif choice == "11":
             log_history(logger, log_dir)
         elif choice == "12":
+            if not prompt_yes_no(
+                logger,
+                "Are you sure you want to exit? (Y/N): ",
+                "Exit",
+            ):
+                continue
             logger.log("INFO", "Exiting LDL Windows ToolBox.")
             return
         else:

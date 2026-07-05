@@ -8,6 +8,7 @@ from toolbox_base import (
     MENU_LOGO,
     Logger,
     clear_screen,
+    prompt_yes_no,
     run_and_log,
     run_command,
 )
@@ -34,6 +35,12 @@ def cleanup(logger: Logger) -> None:
     print(f"All operations are being logged to:\n{logger.logfile}")
     print(MENU_LOGO)
     logger.section("Advanced System Cleanup")
+    if not prompt_yes_no(
+        logger,
+        "Do you want to proceed? (Y/N): ",
+        "Advanced System Cleanup",
+    ):
+        return
 
     free_before = drive_free_mb()
     logger.log_only("INFO", f"Free space before cleanup: {free_before} MB")

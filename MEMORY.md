@@ -52,9 +52,9 @@ Implemented menu behavior (each feature in its own `features/*.py` file), groupe
 
 **System Cleanup (1-3):**
 
-1. Advanced System Cleanup: calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads, and root driver folders such as `AMD`, `NVIDIA`, and `INTEL`; rebuilds temp directories; restarts services; reports MB freed. Event Viewer logs are intentionally handled by option 3 instead of direct file deletion.
+1. Advanced System Cleanup: asks Y/N confirmation; calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads, and root driver folders such as `AMD`, `NVIDIA`, and `INTEL`; rebuilds temp directories; restarts services; reports MB freed. Event Viewer logs are intentionally handled by option 3 instead of direct file deletion.
 2. Windows Component Store Cleanup: asks confirmation, runs `DISM.exe /Online /Cleanup-Image /StartComponentCleanup`.
-3. Clear Event Viewer Logs: enumerates all logs with `wevtutil.exe el` and clears each one with `wevtutil.exe cl`.
+3. Clear Event Viewer Logs: asks Y/N confirmation; enumerates all logs with `wevtutil.exe el` and clears each one with `wevtutil.exe cl`.
 
 **System Repair & Update (4-5):**
 
@@ -67,7 +67,7 @@ Implemented menu behavior (each feature in its own `features/*.py` file), groupe
 
 **Performance (7-8):**
 
-7. Manual SSD TRIM: lists volumes with PowerShell `Get-Volume`, sanitizes and validates a single drive letter, confirms the drive exists, runs `defrag <drive>: /L /V`, displays output, and appends it to the log.
+7. Manual SSD TRIM: lists volumes with PowerShell `Get-Volume`, sanitizes and validates a single drive letter, confirms the drive exists, asks Y/N confirmation, runs `defrag <drive>: /L /V`, displays output, and appends it to the log.
 8. Low Latency Mode: auto-detects CPU architecture (Intel/AMD x64 or Snapdragon ARM64), fetches the latest ViVeTool release from GitHub via API, downloads and extracts the matching ZIP to `tools/vivetool/`, and provides a sub-menu to query/enable/disable feature IDs 58989092, 60716524, and 61391826. Version caching avoids redundant downloads.
 
 **Security & Privacy (9-10):**
@@ -79,7 +79,7 @@ Implemented menu behavior (each feature in its own `features/*.py` file), groupe
 
 11. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
 
-12. Exit: closes the tool.
+12. Exit: asks Y/N confirmation, then closes the tool.
 
 ## Implemented Feature Targets
 

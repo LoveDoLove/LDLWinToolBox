@@ -53,9 +53,9 @@ The project follows a modular file-per-feature architecture:
 
 ### System Cleanup (1-3)
 
-1. Advanced System Cleanup in `features/system_cleanup.py` with free-space calculator, Windows/user temp cleanup, `Prefetch`, `SoftwareDistribution\Download`, and vendor driver root cleanup.
+1. Advanced System Cleanup in `features/system_cleanup.py` with Y/N confirmation, free-space calculator, Windows/user temp cleanup, `Prefetch`, `SoftwareDistribution\Download`, and vendor driver root cleanup.
 2. Windows Component Store Cleanup in `features/winsxs_cleanup.py` using `DISM /StartComponentCleanup`.
-3. Clear Event Viewer Logs in `features/event_log_clear.py` using `wevtutil`.
+3. Clear Event Viewer Logs in `features/event_log_clear.py` with Y/N confirmation using `wevtutil`.
 
 ### System Repair & Update (4-5)
 
@@ -68,7 +68,7 @@ The project follows a modular file-per-feature architecture:
 
 ### Performance (7-8)
 
-7. Manual SSD TRIM in `features/ssd_trim.py` using `defrag /L /V`.
+7. Manual SSD TRIM in `features/ssd_trim.py` with Y/N confirmation after drive selection using `defrag /L /V`.
 8. Low Latency Mode in `features/low_latency_mode.py` using ViVeTool (architecture detection, auto-download, sub-menu for query/enable/disable for feature IDs 58989092, 60716524, 61391826).
 
 ### Security & Privacy (9-10)
@@ -80,7 +80,7 @@ The project follows a modular file-per-feature architecture:
 
 11. View Log History in `features/log_viewer.py` using a read-only paged console viewer for the newest `logs\LDLWinToolBox_*.log` files.
 
-12. Exit.
+12. Exit with Y/N confirmation.
 
 Remote script execution is high risk. Do not run this command during development. If it is implemented as a menu feature, add an explicit warning and confirmation before execution.
 

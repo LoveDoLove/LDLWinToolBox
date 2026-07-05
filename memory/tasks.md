@@ -8,6 +8,7 @@ Last updated: 2026-07-05
 
 ## Completed
 
+- [x] 2026-07-05: Added missing Y/N confirmation prompts to features 1 (Advanced System Cleanup), 3 (Clear Event Viewer Logs), 7 (Manual SSD TRIM), and 12 (Exit).
 - [x] 2026-07-05: Reorganized main menu into logical groups (Cleanup / Repair & Update / Network / Performance / Security & Privacy / Tools).
 - [x] 2026-07-05: Refactored monolithic `ldlwintoolbox.py` into `toolbox_base.py` + `features/` (one file per feature).
 - [x] 2026-07-05: Implemented Low Latency Mode with architecture detection, auto ViVeTool download/extraction, and sub-menu (query/enable/disable).

@@ -8,6 +8,7 @@ from toolbox_base import (
     Logger,
     clear_screen,
     command_exists,
+    prompt_yes_no,
     run_and_log,
     run_command,
     select_existing_drive,
@@ -58,6 +59,12 @@ def ssd_trim(logger: Logger) -> None:
         input("Press Enter to continue...")
         return
     logger.log_only("INFO", f"Selected TRIM drive: {drive}:")
+    if not prompt_yes_no(
+        logger,
+        f"Run SSD TRIM on drive {drive}:? (Y/N): ",
+        "Manual SSD TRIM",
+    ):
+        return
     print(f"\nOptimizing Drive {drive}: ...")
     logger.write_raw(f"Optimizing Drive {drive}: ...")
     print("".join(["-" for _ in range(47)]))
