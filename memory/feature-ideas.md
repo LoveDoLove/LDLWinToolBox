@@ -35,11 +35,11 @@ Keep entries concise, append-friendly, and aligned with the Python-first, menu-d
 - [x] Network before/after snapshot (ipconfig/route/netsh/netstat capture + diff)
 - [x] Log export and archive bundle (#4+#5 combined: report generation + ZIP archive)
 
-### Phase 5: Efficiency & Maintenance ✅ (Partial)
+### Phase 5: Efficiency & Maintenance ✅ (Complete)
 
 - [x] Version and update check for the toolbox itself (GitHub releases API)
-- [ ] Reduce redundant PowerShell calls (deferred — low impact)
-- [ ] Add a read-only mode for status checks (deferred — needs launch-flow change)
+- [x] Reduce redundant PowerShell calls (disk_health: 3→1 call; remaining calls are non-redundant)
+- [x] Add a read-only mode for status checks (diagnostics 12–22 run without admin, 1–11 hidden with [R] restart option)
 
 ### Phase 6: Advanced Features ✅ (Complete)
 
@@ -69,6 +69,6 @@ Keep entries concise, append-friendly, and aligned with the Python-first, menu-d
 - [x] Improve error handling and user-facing failure messages
 - [x] Add progress hints for long-running tasks
 - [x] Make cleanup operations more conservative by default
-- Add a read-only mode for status checks
+- [x] Add a read-only mode for status checks
 - Maintain a lightweight verification checklist after changes
 - Keep README, memory, and task notes synchronized
