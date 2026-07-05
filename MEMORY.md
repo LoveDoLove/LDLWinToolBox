@@ -52,14 +52,14 @@ Implemented menu behavior (each feature in its own `features/*.py` file), groupe
 
 **System Cleanup (1-3):**
 
-1. Advanced System Cleanup: asks Y/N confirmation, optional restore point; calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads, and root driver folders such as `AMD`, `NVIDIA`, and `INTEL`; rebuilds temp directories; restarts services; reports MB freed. Event Viewer logs are intentionally handled by option 3 instead of direct file deletion.
-2. Windows Component Store Cleanup: asks Y/N confirmation and optional restore point, runs `DISM.exe /Online /Cleanup-Image /StartComponentCleanup`.
+1. Advanced System Cleanup: asks Y/N confirmation, optional restore point; calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads; **optionally** removes vendor driver roots (`AMD`, `NVIDIA`, `INTEL`) via separate Y/N prompt; rebuilds temp directories; restarts services; reports MB freed. Event Viewer logs are intentionally handled by option 3 instead of direct file deletion.
+2. Windows Component Store Cleanup: asks Y/N confirmation and optional restore point, runs `DISM.exe /Online /Cleanup-Image /StartComponentCleanup` with `[1/1]` progress hint.
 3. Clear Event Viewer Logs: asks Y/N confirmation and optional restore point; enumerates all logs with `wevtutil.exe el` and clears each one with `wevtutil.exe cl`.
 
 **System Repair & Update (4-5):**
 
-4. System Integrity Repair: asks confirmation and optional restore point, runs `sfc /scannow`, then `DISM /Online /Cleanup-Image /RestoreHealth`.
-5. Update All Installed Apps: asks confirmation and optional restore point, runs `winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements`.
+4. System Integrity Repair: asks confirmation and optional restore point, runs `sfc /scannow` then `DISM /Online /Cleanup-Image /RestoreHealth` with `[1/2] [2/2]` progress hints.
+5. Update All Installed Apps: asks confirmation and optional restore point, runs `winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements` with `[1/1]` progress hint.
 
 **Network (6):**
 

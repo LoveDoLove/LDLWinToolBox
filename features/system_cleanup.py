@@ -90,12 +90,17 @@ def cleanup(logger: Logger) -> None:
         "INFO",
         "- Event Viewer logs are handled by menu option 6 using wevtutil.",
     )
-    system_drive = os.environ.get("SYSTEMDRIVE", "C:")
-    for root_name in ("AMD", "NVIDIA", "INTEL"):
-        root = Path(f"{system_drive}\\{root_name}")
-        if root.exists():
-            logger.log("INFO", f"- Removing Directory {root}")
-            shutil.rmtree(root, ignore_errors=True)
+    if prompt_yes_no(
+        logger,
+        "Also remove vendor driver directories (AMD, NVIDIA, INTEL) on system drive? (Y/N): ",
+        "Vendor Driver Cleanup",
+    ):
+        system_drive = os.environ.get("SYSTEMDRIVE", "C:")
+        for root_name in ("AMD", "NVIDIA", "INTEL"):
+            root = Path(f"{system_drive}\\{root_name}")
+            if root.exists():
+                logger.log("INFO", f"- Removing Directory {root}")
+                shutil.rmtree(root, ignore_errors=True)
 
     print()
     logger.log("INFO", "[3/4] Rebuilding directory structure...")

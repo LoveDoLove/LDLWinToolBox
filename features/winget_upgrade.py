@@ -40,7 +40,7 @@ def app_update(logger: Logger) -> None:
         return
     logger.log(
         "INFO",
-        "Upgrading all installed applications (this may take a while)...",
+        "[1/1] Upgrading all installed applications (this may take a while)...",
     )
     run_and_log(
         logger,

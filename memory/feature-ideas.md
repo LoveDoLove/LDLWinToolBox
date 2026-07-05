@@ -16,10 +16,10 @@ Keep entries concise, append-friendly, and aligned with the Python-first, menu-d
 - [x] Improve error handling and user-facing failure messages
 - [x] Create restore point before risky operations (create_restore_point)
 
-### Phase 2: Safety & Clarity (Next)
+### Phase 2: Safety & Clarity ✅ (Complete)
 
-1. Add progress hints for long-running tasks (`[1/N]` markers where missing)
-2. Make cleanup operations more conservative by default
+- [x] Add progress hints for long-running tasks (`[1/N]` markers where missing)
+- [x] Make cleanup operations more conservative by default (vendor driver roots now opt-in)
 
 ### Phase 3: New Feature Modules
 

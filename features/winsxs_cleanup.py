@@ -40,7 +40,7 @@ def component_store_cleanup(logger: Logger) -> None:
         )
         input("Press Enter to continue...")
         return
-    logger.log("INFO", "Cleaning Windows Component Store...")
+    logger.log("INFO", "[1/1] Cleaning Windows Component Store...")
     run_and_log(
         logger,
         ["dism", "/Online", "/Cleanup-Image", "/StartComponentCleanup"],

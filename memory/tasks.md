@@ -8,6 +8,7 @@ Last updated: 2026-07-05
 
 ## Completed
 
+- [x] 2026-07-05: Phase 2: Added progress hints `[1/1]` to WinSxS / Winget, `[1/2][2/2]` to SFC+DISM; made vendor driver root deletion opt-in (Y/N) for conservative cleanup.
 - [x] 2026-07-05: Added optional restore point via `create_restore_point()` to features 1-7 and 9.
 - [x] 2026-07-05: Added missing Y/N confirmation prompts to features 1, 3, 7, and 12.
 - [x] 2026-07-05: Reorganized main menu into logical groups (Cleanup / Repair & Update / Network / Performance / Security & Privacy / Tools).
