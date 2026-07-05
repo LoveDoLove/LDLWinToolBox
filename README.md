@@ -18,7 +18,7 @@
 <h3 align="center">LDL Windows ToolBox</h3>
 
   <p align="center">
-    A cohesive, menu-driven Windows utility that safely automates advanced system cleanup, integrity repair, component updates, network repair, BitLocker decryption planning, browser AI cleanup, and NVMe SSD optimizations.
+    A cohesive, menu-driven Windows utility that safely automates system cleanup, integrity repair, component updates, network reset, BitLocker decryption planning, browser AI cleanup, SSD TRIM, and low-latency configuration workflows.
     <br />
     <a href="https://github.com/LoveDoLove/LDLWinToolBox"><strong>Explore the docs »</strong></a>
     <br />
@@ -60,9 +60,14 @@
 
 ## About The Project
 
-The LDL Windows ToolBox is now a Python-first Windows utility powered by `uv`, with `LDLWinToolBox.bat` acting as a thin launcher for `ldlwintoolbox.py`. It combines administrative privileges checks, system cleanup, repair flows, network reset, BitLocker decryption planning, browser AI cleanup, and SSD TRIM optimization into a single, cohesive menu-driven interface.
+The LDL Windows ToolBox is a Python-first Windows utility powered by `uv`, with `LDLWinToolBox.bat` acting as a thin launcher for `ldlwintoolbox.py`. It combines administrative privilege elevation, system cleanup, repair flows, network reset, BitLocker decryption planning, browser AI cleanup, SSD TRIM optimization, and low-latency configuration into a single cohesive menu-driven interface.
 
-It safely automates otherwise tedious system administration tasks while maintaining comprehensive, timestamped logs (`logs\LDLWinToolBox_yyMMddHHmmss.log`) of all actions to ensure complete historical records and safety.
+The project follows a modular architecture:
+- `ldlwintoolbox.py` — thin entry point with admin logic and main menu dispatch
+- `toolbox_base.py` — shared infrastructure (Logger, CommandResult, run/command/prompt helpers)
+- `features/` — one file per feature, each importing only from `toolbox_base`
+
+All operations are safely logged with comprehensive timestamped records under `logs\LDLWinToolBox_yyMMddHHmmss.log`. The tool uses only Python standard library and built-in Windows commands; zero external dependencies are required.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -83,7 +88,8 @@ To get a local copy up and running follow these simple steps.
 ### Prerequisites
 
 - Windows 10 or Windows 11
-- Administrator rights (the tool will automatically request this using UAC if launched without it)
+- Administrator rights (the tool automatically requests elevation via UAC if launched without them)
+- [uv](https://docs.astral.sh/uv/) (recommended) — the launcher falls back to `python` if uv is not available
 
 ### Installation
 
@@ -91,7 +97,10 @@ To get a local copy up and running follow these simple steps.
    ```sh
    git clone https://github.com/LoveDoLove/LDLWinToolBox.git
    ```
-2. Double-click `LDLWinToolBox.bat` to launch the interactive menu, or run `uv run -- python ldlwintoolbox.py`.
+2. Double-click `LDLWinToolBox.bat` to launch the interactive menu, or run:
+   ```sh
+   uv run -- python ldlwintoolbox.py
+   ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -99,23 +108,35 @@ To get a local copy up and running follow these simple steps.
 
 ## Usage
 
-Upon launching, the interactive menu provides numerical options (1-11) to execute tools:
+Upon launching, the interactive menu provides numbered options organized into logical groups:
 
-- **[1] Advanced System Cleanup**: Deeply cleans temporary system data, calculates Space Freed (MB).
-- **[2] System Integrity Repair**: Executes `SFC` and `DISM` to scan and repair corrupt OS files.
-- **[3] Windows Component Store Cleanup**: Removes superseded Windows Update install files (WinSxS).
-- **[4] Update All Installed Apps**: Silently updates all `winget`-installed apps.
-- **[5] Complete Network Reset**: Resets Winsock, TCP/IP, and DNS cache entirely.
-- **[6] Clear Event Viewer Logs**: Flushes system, security, and application logs.
-- **[7] Manual SSD TRIM**: Optimized for NVMe drives, triggers manual SSD re-trim using Windows defrag.
-- **[8] Disable BitLocker (Plan)**: Shows BitLocker status, validates a selected drive letter, then starts `manage-bde -off` only after typing `DISABLE`.
-- **[9] Kill Browser AI**: Runs the configured remote PowerShell cleanup command only after typing `KILL`.
-- **[10] View Log History**: Lists recent toolbox logs and opens the selected log with paged console viewing.
-- **[11] Exit**: Closes the toolbox.
+**System Cleanup**
+- **[1] Advanced System Cleanup**: Deeply cleans temporary system data, prefetch, SoftwareDistribution downloads, vendor driver roots; calculates space freed (MB).
+- **[2] Windows Component Store Cleanup (WinSxS)**: Removes superseded Windows Update install files using DISM.
+- **[3] Clear Event Viewer Logs**: Flushes system, security, and application logs via wevtutil.
 
-Each run writes a structured log under `logs\` with a session header, environment summary, section markers, user cancellations, command start/end markers, and exit codes for key system commands. The Log History viewer shows the newest logs first and does not delete or modify old log files.
+**System Repair & Update**
+- **[4] System Integrity Repair (SFC + DISM)**: Scans and repairs corrupt OS files with SFC and DISM RestoreHealth.
+- **[5] Update All Installed Apps**: Silently updates all winget-installed applications.
 
-_For AI maintenance context and persistent project rules, please refer to [AGENTS.md](AGENTS.md), [MEMORY.md](MEMORY.md), and [memory/tasks.md](memory/tasks.md)._
+**Network**
+- **[6] Complete Network Reset**: Resets Winsock, TCP/IP stack, and DNS cache entirely.
+
+**Performance**
+- **[7] Manual SSD TRIM**: Triggers manual SSD re-trim using the Windows defrag utility.
+- **[8] Low Latency Mode (ViVeTool)**: Auto-detects CPU architecture (Intel/AMD or Snapdragon ARM64), downloads ViVeTool, and manages Windows low-latency feature flags (IDs 58989092, 60716524, 61391826) with query/enable/disable sub-menu.
+
+**Security & Privacy**
+- **[9] Disable BitLocker (Plan)**: Shows BitLocker status, validates a selected drive, then starts decryption after typing `DISABLE`.
+- **[10] Kill Browser AI**: Executes a configured remote PowerShell cleanup command to disable on-device browser AI features after typing `KILL`.
+
+**Tools**
+- **[11] View Log History**: Lists recent toolbox logs and opens the selected log with paged console viewing.
+- **[12] Exit**: Closes the toolbox.
+
+Each run writes a structured log under `logs\` with a session header, environment summary, section markers, user cancellations, command start/end markers, and exit codes for key system commands.
+
+_For AI maintenance context and persistent project rules, refer to [AGENTS.md](AGENTS.md), [MEMORY.md](MEMORY.md), and [memory/tasks.md](memory/tasks.md)._
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -169,13 +190,13 @@ Project Link: [https://github.com/LoveDoLove/LDLWinToolBox](https://github.com/L
 ## Acknowledgments
 
 - [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
+- [ViVeTool](https://github.com/thebookisclosed/ViVe) by thebookisclosed
 - [Windows UAC / ShellExecuteW](https://learn.microsoft.com/windows/win32/api/shellapi/nf-shellapi-shellexecutew)
 - [Winget Tool](https://docs.microsoft.com/en-us/windows/package-manager/winget/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
 [contributors-shield]: https://img.shields.io/github/contributors/LoveDoLove/LDLWinToolBox.svg?style=for-the-badge
 [contributors-url]: https://github.com/LoveDoLove/LDLWinToolBox/graphs/contributors

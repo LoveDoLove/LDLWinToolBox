@@ -1,6 +1,6 @@
 # MEMORY.md
 
-Last updated: 2026-07-05 (modular refactor completed)
+Last updated: 2026-07-05
 
 ## User Preferences
 
@@ -17,7 +17,7 @@ Last updated: 2026-07-05 (modular refactor completed)
 - Repository path: `D:\Projects\WinProjects\LDLWinToolBox`
 - Git remote: `https://github.com/LoveDoLove/LDLWinToolBox.git`
 - Current branch at scan time: `lovedolove`
-- Latest scanned commit: `3b5e50e Complete toolbox safety features`
+- Latest scanned commit: `fbb2701 Refactor into modular architecture + add Low Latency Mode + reorganize menu`
 - Latest repository scan: `2026-07-05`.
 - License: Apache License 2.0
 - Primary executable: `LDLWinToolBox.bat` thin launcher for `ldlwintoolbox.py` via `uv run -- python`
@@ -28,7 +28,7 @@ Last updated: 2026-07-05 (modular refactor completed)
 - GitHub metadata: `.github/FUNDING.yml`, `.github/ISSUE_TEMPLATE/bug-report---.md`, `.github/ISSUE_TEMPLATE/feature-request---.md`
 - Asset: `images/logo.png`
 - Ignored local template observed: `BLANK_README.md`
-- Runtime logs observed under `logs\`; `*.log` is ignored by `.gitignore`.
+- Runtime logs observed under `logs\`; `*.log` is ignored by `.gitignore`. Downloaded binaries in `tools/` are also git-ignored.
 
 ## Current Repository Logic
 
@@ -95,7 +95,9 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 
 ### 2026-07-05 (Python)
 
+- Modular refactor: split monolithic `ldlwintoolbox.py` into `toolbox_base.py` + `features/` (one file per feature).
 - Low Latency Mode: auto-detects `platform.machine()` → `IntelAmd` (AMD64/x86) or `SnapdragonArm64` (ARM64), fetches latest ViVe release from `api.github.com/repos/thebookisclosed/ViVe/releases/latest`, downloads matching ZIP via `urllib.request`, extracts with `zipfile` to `tools/vivetool/`, caches version in `version.txt`, provides sub-menu for `/query`, `/enable`, `/disable` on IDs 58989092, 60716524, 61391826.
+- Menu reorganization into logical groups: System Cleanup, Repair & Update, Network, Performance, Security & Privacy, Tools.
 
 ## Documentation And Prompt Files
 
@@ -108,7 +110,7 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 
 ## New Feature Details
 
-### Low Latency Mode (Menu 11)
+### Low Latency Mode (Menu 8)
 
 **Architecture detection:**
 - `platform.machine()` → `AMD64` → Intel/AMD x64
@@ -133,7 +135,7 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 ## Known Gaps And Risks
 
 - The current Python launcher/elevation flow uses `IsUserAnAdmin()` plus `ShellExecuteW(..., "runas", ...)`; keep both the `uv` and `sys.executable` launch paths working.
-- Cleanup no longer deletes Event Viewer log files directly; option 6 remains the safe `wevtutil` path for clearing logs.
+- Cleanup no longer deletes Event Viewer log files directly; option 3 (Clear Event Viewer Logs) remains the safe `wevtutil` path for clearing logs.
 - No circular dependencies; each feature imports only from `toolbox_base`
 - The remote `kill_ai.ps1` gist was retrieved and reviewed on 2026-06-13; it disables Chrome and Edge on-device AI by applying registry policy keys and locking the `OptGuideOnDeviceModel` folders, but it still remains high risk and is only executed through the guarded PowerShell wrapper after explicit `KILL` confirmation.
 - `BLANK_README.md` is present locally but ignored by git and appears to be an unused Best-README-Template source file.
