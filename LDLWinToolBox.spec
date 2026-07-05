@@ -4,7 +4,7 @@
 import tomllib
 from pathlib import Path
 
-here = Path(__file__).parent
+here = Path.cwd()
 pyproject = here / "pyproject.toml"
 data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
 app_ver = data["project"]["version"]
