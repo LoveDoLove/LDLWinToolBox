@@ -5,6 +5,7 @@ from toolbox_base import (
     Logger,
     clear_screen,
     command_exists,
+    create_restore_point,
     prompt_yes_no,
     run_and_log,
 )
@@ -20,6 +21,12 @@ def component_store_cleanup(logger: Logger) -> None:
     print("-> DO NOT interrupt this process (can corrupt updates).")
     print(MENU_LOGO)
     logger.section("Windows Component Store Cleanup")
+    if prompt_yes_no(
+        logger,
+        "Create a system restore point before proceeding? (Y/N): ",
+        "Restore Point - Windows Component Store Cleanup",
+    ):
+        create_restore_point(logger, "Before WinSxS Component Store Cleanup")
     if not prompt_yes_no(
         logger,
         "Do you want to proceed? (Y/N): ",
@@ -33,7 +40,7 @@ def component_store_cleanup(logger: Logger) -> None:
         )
         input("Press Enter to continue...")
         return
-    logger.log("INFO", "Cleaning Windows Component Store...")
+    logger.log("INFO", "[1/1] Cleaning Windows Component Store...")
     run_and_log(
         logger,
         ["dism", "/Online", "/Cleanup-Image", "/StartComponentCleanup"],

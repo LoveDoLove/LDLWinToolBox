@@ -16,11 +16,8 @@ from toolbox_base import (
     run_and_log,
 )
 
-
 VIVE_REPO = "thebookisclosed/ViVe"
-VIVE_TOOLS_DIR = (
-    Path(__file__).resolve().parent.parent / "tools" / "vivetool"
-)
+VIVE_TOOLS_DIR = Path(__file__).resolve().parent.parent / "tools" / "vivetool"
 LOW_LATENCY_IDS = ["58989092", "60716524", "61391826"]
 LOW_LATENCY_DESC = {
     "58989092": "Core Low Latency Profile",
@@ -35,9 +32,7 @@ def detect_architecture() -> str:
 
 
 def _fetch_json(url: str) -> dict | None:
-    req = urllib.request.Request(
-        url, headers={"User-Agent": "LDLWinToolBox/1.0"}
-    )
+    req = urllib.request.Request(url, headers={"User-Agent": "LDLWinToolBox/1.0"})
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
             return json.loads(resp.read().decode("utf-8"))
@@ -51,9 +46,7 @@ def _fetch_json(url: str) -> dict | None:
 
 
 def _download_file(url: str, dest: Path) -> bool:
-    req = urllib.request.Request(
-        url, headers={"User-Agent": "LDLWinToolBox/1.0"}
-    )
+    req = urllib.request.Request(url, headers={"User-Agent": "LDLWinToolBox/1.0"})
     try:
         with urllib.request.urlopen(req, timeout=30) as resp:
             with dest.open("wb") as f:
@@ -67,38 +60,26 @@ def ensure_vivetool(logger: Logger) -> Path | None:
     VIVE_TOOLS_DIR.mkdir(parents=True, exist_ok=True)
     exe = VIVE_TOOLS_DIR / "ViVeTool.exe"
     ver_file = VIVE_TOOLS_DIR / "version.txt"
-    cached_ver = (
-        ver_file.read_text(encoding="utf-8").strip()
-        if ver_file.exists()
-        else ""
-    )
+    cached_ver = ver_file.read_text(encoding="utf-8").strip() if ver_file.exists() else ""
 
     arch = detect_architecture()
     logger.log_only("INFO", f"Detected architecture: {arch}")
 
-    release = _fetch_json(
-        f"https://api.github.com/repos/{VIVE_REPO}/releases/latest"
-    )
+    release = _fetch_json(f"https://api.github.com/repos/{VIVE_REPO}/releases/latest")
     if release is not None:
         tag = release["tag_name"]
         if tag != cached_ver:
             logger.log("INFO", f"Downloading ViVeTool {tag}...")
             suffix = f"{arch}.zip"
             asset = next(
-                (
-                    a
-                    for a in release["assets"]
-                    if a["name"].endswith(suffix)
-                ),
+                (a for a in release["assets"] if a["name"].endswith(suffix)),
                 None,
             )
             if asset is None:
                 logger.log("ERROR", f"No ViVeTool asset for {arch}.")
                 return exe if exe.exists() else None
             zip_path = VIVE_TOOLS_DIR / asset["name"]
-            logger.log(
-                "INFO", f"  Source: {asset['browser_download_url']}"
-            )
+            logger.log("INFO", f"  Source: {asset['browser_download_url']}")
             if not _download_file(asset["browser_download_url"], zip_path):
                 logger.log("ERROR", "Download failed.")
                 zip_path.unlink(missing_ok=True)
@@ -117,9 +98,7 @@ def ensure_vivetool(logger: Logger) -> Path | None:
         else:
             logger.log("INFO", f"ViVeTool {tag} is up to date.")
     elif exe.exists():
-        logger.log(
-            "WARN", "Could not check for updates. Using cached ViVeTool."
-        )
+        logger.log("WARN", "Could not check for updates. Using cached ViVeTool.")
     else:
         logger.log(
             "ERROR",
@@ -134,12 +113,8 @@ def low_latency_mode(logger: Logger) -> None:
     print(MENU_LOGO)
     print("            LOW LATENCY MODE")
     print(MENU_LOGO)
-    print(
-        "This feature uses ViVeTool to manage Windows low"
-    )
-    print(
-        "latency feature flags for better system responsiveness."
-    )
+    print("This feature uses ViVeTool to manage Windows low")
+    print("latency feature flags for better system responsiveness.")
     print()
     print("Feature IDs:")
     for fid in LOW_LATENCY_IDS:
@@ -164,9 +139,7 @@ def low_latency_mode(logger: Logger) -> None:
         print(f"ViVeTool     : {vivetool}")
         ver_path = VIVE_TOOLS_DIR / "version.txt"
         current_ver = (
-            ver_path.read_text(encoding="utf-8").strip()
-            if ver_path.exists()
-            else "unknown"
+            ver_path.read_text(encoding="utf-8").strip() if ver_path.exists() else "unknown"
         )
         print(f"Version      : {current_ver}")
         print(MENU_LOGO)
@@ -176,9 +149,7 @@ def low_latency_mode(logger: Logger) -> None:
         print("[4] Return to Main Menu")
         print(MENU_LOGO)
         choice = input("Select an option: ").strip()
-        logger.log_only(
-            "INFO", f"Low Latency Mode sub-menu selection: {choice}"
-        )
+        logger.log_only("INFO", f"Low Latency Mode sub-menu selection: {choice}")
 
         if choice == "1":
             logger.section("Low Latency Mode — Status Check")
@@ -200,9 +171,7 @@ def low_latency_mode(logger: Logger) -> None:
             print(MENU_LOGO)
             print("            LOW LATENCY MODE")
             print(MENU_LOGO)
-            print(
-                "WARNING: This enables system-wide low latency"
-            )
+            print("WARNING: This enables system-wide low latency")
             print("features to improve responsiveness.")
             print("-> A reboot may be required to take effect.")
             print("-> Can be safely reverted by disabling.")
@@ -232,9 +201,7 @@ def low_latency_mode(logger: Logger) -> None:
             print(MENU_LOGO)
             print("            LOW LATENCY MODE")
             print(MENU_LOGO)
-            print(
-                "WARNING: This disables low latency features,"
-            )
+            print("WARNING: This disables low latency features,")
             print("restoring default system behavior.")
             print("-> A reboot may be required to take effect.")
             print(MENU_LOGO)

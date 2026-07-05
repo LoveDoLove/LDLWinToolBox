@@ -9,7 +9,6 @@ from toolbox_base import (
     run_and_log,
 )
 
-
 GIST_URL = "https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1"
 
 
@@ -29,9 +28,7 @@ def kill_browser_ai(logger: Logger) -> None:
     print()
     logger.section("Kill Browser AI")
     logger.log_only("WARN", f"Remote script source: {GIST_URL}")
-    if not prompt_keyword(
-        logger, "Type KILL to run Kill Browser AI: ", "KILL", "Kill Browser AI"
-    ):
+    if not prompt_keyword(logger, "Type KILL to run Kill Browser AI: ", "KILL", "Kill Browser AI"):
         return
     if not command_exists("powershell"):
         logger.log(

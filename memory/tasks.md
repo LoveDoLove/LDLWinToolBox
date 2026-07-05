@@ -2,12 +2,33 @@
 
 Last updated: 2026-07-05
 
-## Pending
+## Pending (Production Version)
 
-- [ ] Overall user testing and feedback
+- [ ] Phase C1: PyInstaller spec 打包腳本
+- [ ] Phase C2: GitHub Release workflow (自動 build exe + upload)
+- [ ] Phase C3: 版本號統一從 pyproject.toml 讀取
 
 ## Completed
 
+- [x] 2026-07-05: Phase B3: 選單美化 + ANSI 彩色 + box-drawing + 版本號顯示
+- [x] 2026-07-05: Phase B2: 自製進度指示器 (spinner for long tasks)
+- [x] 2026-07-05: Phase B1: ANSI 彩色輸出基礎設施 (toolbox_base.py 色彩常數 + cprint)
+- [x] 2026-07-05: Phase A4: 建立 GitHub Actions CI workflow (.github/workflows/ci.yml)
+- [x] 2026-07-05: Phase A3: 建立 scripts/check.ps1 統一檢查腳本
+- [x] 2026-07-05: Phase A2: 補全所有 features/*.py 型別註解
+- [x] 2026-07-05: Phase A1: pyproject.toml 加入 Ruff 設定 (lint + format + isort)
+- [x] 2026-07-05: 寫入生產版本 (Production Version) 計劃到 MEMORY.md 與 tasks.md
+
+## Completed (Pre-Production)
+
+- [x] 2026-07-05: Phase 5 complete: Self-update check, read-only mode (diagnostics without admin), PowerShell calls batched (disk_health: 3→1).
+- [x] 2026-07-05: Phase 6: Recovery tools (bcdedit safe mode/WinRE), selective cleanup sub-menu, exclusion list manager (config/exclusions.json). Menu renumbered Exit to 23.
+- [x] 2026-07-05: Phase 5: Self-update check via GitHub releases API (menu 20). Bumped version to 1.0.3. Renumbered Exit to 21.
+- [x] 2026-07-05: Phase 4: Created 4 reporting features (disk_health, driver_inventory, network_snapshot, export_report). Renumbered menu (Exit: 16→20).
+- [x] 2026-07-05: Phase 3: Created 4 diagnostic features (system_info, windows_update, defender_tools, service_health) with read-only info + optional scan actions. Renumbered menu (Exit: 12→16).
+- [x] 2026-07-05: Phase 2: Added progress hints `[1/1]` to WinSxS / Winget, `[1/2][2/2]` to SFC+DISM; made vendor driver root deletion opt-in (Y/N) for conservative cleanup.
+- [x] 2026-07-05: Added optional restore point via `create_restore_point()` to features 1-7 and 9.
+- [x] 2026-07-05: Added missing Y/N confirmation prompts to features 1, 3, 7, and 12.
 - [x] 2026-07-05: Reorganized main menu into logical groups (Cleanup / Repair & Update / Network / Performance / Security & Privacy / Tools).
 - [x] 2026-07-05: Refactored monolithic `ldlwintoolbox.py` into `toolbox_base.py` + `features/` (one file per feature).
 - [x] 2026-07-05: Implemented Low Latency Mode with architecture detection, auto ViVeTool download/extraction, and sub-menu (query/enable/disable).

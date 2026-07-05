@@ -5,7 +5,9 @@ from toolbox_base import (
     Logger,
     clear_screen,
     command_exists,
+    create_restore_point,
     prompt_keyword,
+    prompt_yes_no,
     run_and_log,
     select_existing_drive,
 )
@@ -32,9 +34,7 @@ def bitlocker_disable(logger: Logger) -> None:
         return
     print("Current BitLocker status:")
     logger.log_only("INFO", "Current BitLocker status:")
-    status_result = run_and_log(
-        logger, ["manage-bde", "-status"], "manage-bde -status"
-    )
+    status_result = run_and_log(logger, ["manage-bde", "-status"], "manage-bde -status")
     if status_result.stdout:
         print(
             status_result.stdout,
@@ -50,16 +50,12 @@ def bitlocker_disable(logger: Logger) -> None:
     if drive is None:
         return
     if drive == "":
-        logger.log(
-            "ERROR", "No valid drive was selected for Disable BitLocker."
-        )
+        logger.log("ERROR", "No valid drive was selected for Disable BitLocker.")
         input("Press Enter to continue...")
         return
     logger.log_only("INFO", f"Selected BitLocker drive: {drive}:")
     print("\nSelected drive status:")
-    logger.log_only(
-        "INFO", f"Selected BitLocker drive status for {drive}:"
-    )
+    logger.log_only("INFO", f"Selected BitLocker drive status for {drive}:")
     status_result = run_and_log(
         logger,
         ["manage-bde", "-status", f"{drive}:"],
@@ -76,6 +72,12 @@ def bitlocker_disable(logger: Logger) -> None:
             end="" if status_result.stderr.endswith("\n") else "\n",
         )
     print()
+    if prompt_yes_no(
+        logger,
+        "Create a system restore point before proceeding? (Y/N): ",
+        "Restore Point - Disable BitLocker",
+    ):
+        create_restore_point(logger, "Before Disabling BitLocker")
     if not prompt_keyword(
         logger,
         f"Type DISABLE to start decryption for {drive}: ",

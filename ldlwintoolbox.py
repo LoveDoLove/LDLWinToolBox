@@ -7,23 +7,38 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from toolbox_base import (
-    Logger,
-    clear_screen,
-    get_log_dir,
-    write_session_header,
-)
 from features.bitlocker_disable import bitlocker_disable
 from features.browser_ai_killer import kill_browser_ai
+from features.cleanup_config import cleanup_config
+from features.defender_tools import defender_tools
+from features.disk_health import disk_health
+from features.driver_inventory import driver_inventory
 from features.event_log_clear import event_logs
+from features.export_report import export_report
 from features.log_viewer import log_history
 from features.low_latency_mode import low_latency_mode
 from features.network_reset import net_reset
+from features.network_snapshot import network_snapshot
+from features.recovery_tools import recovery_tools
+from features.self_update import self_update
+from features.service_health import service_health
 from features.ssd_trim import ssd_trim
 from features.system_cleanup import cleanup
+from features.system_info import system_info
 from features.system_repair import sys_repair
+from features.windows_update import windows_update
 from features.winget_upgrade import app_update
 from features.winsxs_cleanup import component_store_cleanup
+from toolbox_base import (
+    TOOLBOX_VERSION,
+    Color,
+    Logger,
+    clear_screen,
+    cprint,
+    get_log_dir,
+    prompt_yes_no,
+    write_session_header,
+)
 
 
 def is_admin() -> bool:
@@ -44,44 +59,95 @@ def relaunch_as_admin() -> None:
     ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, params, None, 1)
 
 
-def ensure_admin() -> None:
-    if is_admin():
-        return
-    print("Requesting administrative privileges...")
-    relaunch_as_admin()
-    raise SystemExit(0)
+def _print_header(is_admin_user: bool) -> None:
+    bold = Color.BOLD
+    cyan = Color.CYAN
+    yellow = Color.YELLOW
+    cprint("─" * 47, Color.DIM)
+    cprint("       ⚙  LDL Windows ToolBox", bold, cyan)
+    cprint(f"               v{TOOLBOX_VERSION}", Color.DIM)
+    if not is_admin_user:
+        cprint("          ★ READ-ONLY MODE ★", bold, yellow)
+    cprint("─" * 47, Color.DIM)
 
 
-def main_menu(logger: Logger, log_dir: Path) -> None:
+def _print_section(title: str) -> None:
+    cprint(f" ── {title} ──", Color.BOLD, Color.GREEN)
+
+
+def _print_item(key: str, desc: str) -> None:
+    cprint(f" [{key}] {desc}", Color.WHITE)
+
+
+def main_menu(logger: Logger, log_dir: Path, script_dir: Path, is_admin_user: bool) -> None:
     while True:
         clear_screen()
-        print("===============================================")
-        print("           LDL Windows ToolBox")
-        print("===============================================")
-        print(" ── System Cleanup ──")
-        print("[1] Advanced System Cleanup")
-        print("[2] Windows Component Store Cleanup (WinSxS)")
-        print("[3] Clear Event Viewer Logs")
-        print(" ── System Repair & Update ──")
-        print("[4] System Integrity Repair (SFC + DISM)")
-        print("[5] Update All Installed Apps (Winget)")
-        print(" ── Network ──")
-        print("[6] Complete Network Reset")
-        print(" ── Performance ──")
-        print("[7] Manual SSD TRIM")
-        print("[8] Low Latency Mode (ViVeTool)")
-        print(" ── Security & Privacy ──")
-        print("[9] Disable BitLocker (Plan)")
-        print("[10] Kill Browser AI")
-        print(" ── Tools ──")
-        print("[11] View Log History")
-        print("───────────────────────────────────────────────")
-        print("[12] Exit")
-        print("===============================================")
-        print(f"Log: {logger.logfile}")
-        print("===============================================")
+        _print_header(is_admin_user)
+        if is_admin_user:
+            _print_section("System Cleanup")
+            _print_item("1", "Advanced System Cleanup")
+            _print_item("2", "Windows Component Store Cleanup (WinSxS)")
+            _print_item("3", "Clear Event Viewer Logs")
+            _print_section("System Repair & Update")
+            _print_item("4", "System Integrity Repair (SFC + DISM)")
+            _print_item("5", "Update All Installed Apps (Winget)")
+            _print_section("Network")
+            _print_item("6", "Complete Network Reset")
+            _print_section("Performance")
+            _print_item("7", "Manual SSD TRIM")
+            _print_item("8", "Low Latency Mode (ViVeTool)")
+            _print_section("Security & Privacy")
+            _print_item("9", "Disable BitLocker (Plan)")
+            _print_item("10", "Kill Browser AI")
+            _print_section("Recovery")
+            _print_item("11", "Recovery & Safe Mode Tools")
+        else:
+            cprint("  (Admin features hidden. Press [R] to restart as admin.)", Color.DIM)
+        _print_section("Diagnostics")
+        _print_item("12", "System Information")
+        _print_item("13", "Windows Update Status")
+        _print_item("14", "Defender Status & Quick Scan")
+        _print_item("15", "Service Health Check")
+        _print_item("16", "Disk Health & SMART Summary")
+        _print_item("17", "Driver Inventory")
+        _print_item("18", "Network Snapshot")
+        _print_item("19", "Export Logs & Report")
+        _print_section("Tools")
+        _print_item("20", "View Log History")
+        _print_item("21", "Check for Updates")
+        _print_item("22", "Cleanup Exclusion List")
+        cprint(Color.DIM + "───────────────────────────────────────────────" + Color.RESET)
+        if not is_admin_user:
+            cprint(" [R] Restart as Administrator", Color.YELLOW)
+        cprint(" [23] Exit", Color.RED)
+        cprint(Color.DIM + "═" * 47 + Color.RESET)
+        cprint(f" Log: {logger.logfile}", Color.DIM)
+        cprint(Color.DIM + "═" * 47 + Color.RESET)
         choice = input("Select an option: ").strip()
         logger.log_only("INFO", f"Menu selection: {choice}")
+
+        if not is_admin_user and choice.upper() == "R":
+            logger.log("INFO", "User requested admin restart.")
+            relaunch_as_admin()
+            continue
+
+        if not is_admin_user and choice in (
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+        ):
+            logger.log("WARN", f"Admin feature {choice} blocked in read-only mode.")
+            print("This feature requires administrator privileges.")
+            input("Press Enter to continue...")
+            continue
 
         if choice == "1":
             cleanup(logger)
@@ -104,8 +170,36 @@ def main_menu(logger: Logger, log_dir: Path) -> None:
         elif choice == "10":
             kill_browser_ai(logger)
         elif choice == "11":
-            log_history(logger, log_dir)
+            recovery_tools(logger)
         elif choice == "12":
+            system_info(logger)
+        elif choice == "13":
+            windows_update(logger)
+        elif choice == "14":
+            defender_tools(logger)
+        elif choice == "15":
+            service_health(logger)
+        elif choice == "16":
+            disk_health(logger)
+        elif choice == "17":
+            driver_inventory(logger)
+        elif choice == "18":
+            network_snapshot(logger, script_dir)
+        elif choice == "19":
+            export_report(logger, log_dir)
+        elif choice == "20":
+            log_history(logger, log_dir)
+        elif choice == "21":
+            self_update(logger)
+        elif choice == "22":
+            cleanup_config(logger)
+        elif choice == "23":
+            if not prompt_yes_no(
+                logger,
+                "Are you sure you want to exit? (Y/N): ",
+                "Exit",
+            ):
+                continue
             logger.log("INFO", "Exiting LDL Windows ToolBox.")
             return
         else:
@@ -113,7 +207,6 @@ def main_menu(logger: Logger, log_dir: Path) -> None:
 
 
 def main() -> None:
-    ensure_admin()
     script_file = Path(__file__).resolve()
     script_dir = script_file.parent
     os.chdir(script_dir)
@@ -122,8 +215,14 @@ def main() -> None:
     logfile = log_dir / f"LDLWinToolBox_{log_time}.log"
     logger = Logger(logfile)
     write_session_header(logger, logfile, script_file, script_dir)
+    admin_user = is_admin()
+    if not admin_user:
+        logger.log_only("WARN", "Started without admin privileges - read-only mode.")
+        print("Running in read-only mode. Admin features (1-11) are hidden.")
+        print("Press Enter to continue...")
+        input()
     try:
-        main_menu(logger, log_dir)
+        main_menu(logger, log_dir, script_dir, admin_user)
     except KeyboardInterrupt:
         logger.log("INFO", "User cancelled the session with Ctrl+C.")
 

@@ -6,12 +6,82 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
-
 MENU_LOGO = "=" * 47
+
+
+class Color:
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+    DIM = "\033[2m"
+    RED = "\033[91m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    BLUE = "\033[94m"
+    MAGENTA = "\033[95m"
+    CYAN = "\033[96m"
+    WHITE = "\033[97m"
+    HEADER = "\033[105m\033[97m"
+
+
+def cprint(text: str, *styles: str, indent: int = 0) -> None:
+    prefix = " " * indent
+    joined = "".join(styles)
+    if joined:
+        print(f"{prefix}{joined}{text}{Color.RESET}")
+    else:
+        print(f"{prefix}{text}")
+
+
+class Spinner:
+    def __init__(self, message: str = "", delay: float = 0.15) -> None:
+        self._message = message
+        self._delay = delay
+        self._running = False
+        self._thread: threading.Thread | None = None
+
+    def __enter__(self) -> Spinner:
+        self._running = True
+        self._thread = threading.Thread(target=self._spin, daemon=True)
+        self._thread.start()
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self._running = False
+        if self._thread:
+            self._thread.join()
+        sys.stdout.write("\r" + " " * (len(self._message) + 4) + "\r")
+        sys.stdout.flush()
+
+    def _spin(self) -> None:
+        chars = "|/-\\"
+        i = 0
+        while self._running:
+            sys.stdout.write(f"\r{chars[i % len(chars)]} {self._message}")
+            sys.stdout.flush()
+            time.sleep(self._delay)
+            i += 1
+
+
+def _read_version() -> str:
+    try:
+        import tomllib
+
+        pyproject = Path(__file__).resolve().parent / "pyproject.toml"
+        if pyproject.exists():
+            data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+            return data.get("project", {}).get("version", "0.0.0")
+    except Exception:
+        pass
+    return "0.0.0"
+
+
+TOOLBOX_VERSION: str = _read_version()
 
 
 @dataclass(slots=True)
@@ -83,9 +153,7 @@ def run_command(
         raise subprocess.CalledProcessError(
             completed.returncode, command, completed.stdout, completed.stderr
         )
-    return CommandResult(
-        completed.returncode, completed.stdout or "", completed.stderr or ""
-    )
+    return CommandResult(completed.returncode, completed.stdout or "", completed.stderr or "")
 
 
 def run_and_log(
@@ -136,9 +204,7 @@ def prompt_drive(logger: Logger, prompt: str, context: str) -> str | None:
 
 
 def select_existing_drive(logger: Logger, context: str) -> str | None:
-    choice = prompt_drive(
-        logger, "Press 0 to return, or drive letter to continue (A-Z): ", context
-    )
+    choice = prompt_drive(logger, "Press 0 to return, or drive letter to continue (A-Z): ", context)
     if choice is None:
         return None
     if choice == "":
@@ -147,6 +213,42 @@ def select_existing_drive(logger: Logger, context: str) -> str | None:
         logger.log("ERROR", f"Drive {choice}: was not found.")
         return ""
     return choice
+
+
+def create_restore_point(logger: Logger, description: str) -> bool:
+    """Create a system restore point. Returns True on success, False on failure.
+
+    If System Restore is disabled or PowerShell is unavailable, logs a warning
+    and returns False without blocking the caller.
+    """
+    if not command_exists("powershell"):
+        logger.log_only(
+            "WARN",
+            "Cannot create restore point: PowerShell is not available.",
+        )
+        return False
+    ps = (
+        "Checkpoint-Computer -Description 'LDLWinToolBox - "
+        + description.replace("'", "''")
+        + "' -RestorePointType MODIFY_SETTINGS"
+    )
+    logger.log_only("INFO", f"Creating system restore point: {description} ...")
+    result = run_command(["powershell", "-NoProfile", "-Command", ps], capture=True)
+    rc = result.code
+    if rc == 0:
+        logger.log_only("OK", f"Restore point created: {description}")
+        print(">>> System restore point created successfully.")
+        return True
+    stderr = result.stderr.strip()
+    logger.log_only("WARN", f"Restore point failed (exit={rc}): {stderr or 'unknown error'}")
+    if "0x80070422" in stderr:
+        print(
+            ">>> System Restore may be disabled. Enable it in System Properties"
+            " to use this feature."
+        )
+    else:
+        print(f">>> Restore point creation failed (exit={rc}). Continuing anyway.")
+    return False
 
 
 def write_session_header(

@@ -52,34 +52,52 @@ Implemented menu behavior (each feature in its own `features/*.py` file), groupe
 
 **System Cleanup (1-3):**
 
-1. Advanced System Cleanup: calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads, and root driver folders such as `AMD`, `NVIDIA`, and `INTEL`; rebuilds temp directories; restarts services; reports MB freed. Event Viewer logs are intentionally handled by option 3 instead of direct file deletion.
-2. Windows Component Store Cleanup: asks confirmation, runs `DISM.exe /Online /Cleanup-Image /StartComponentCleanup`.
-3. Clear Event Viewer Logs: enumerates all logs with `wevtutil.exe el` and clears each one with `wevtutil.exe cl`.
+1. Advanced System Cleanup: asks Y/N confirmation, optional restore point; calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads; **optionally** removes vendor driver roots (`AMD`, `NVIDIA`, `INTEL`) via separate Y/N prompt; rebuilds temp directories; restarts services; reports MB freed. Event Viewer logs are intentionally handled by option 3 instead of direct file deletion.
+2. Windows Component Store Cleanup: asks Y/N confirmation and optional restore point, runs `DISM.exe /Online /Cleanup-Image /StartComponentCleanup` with `[1/1]` progress hint.
+3. Clear Event Viewer Logs: asks Y/N confirmation and optional restore point; enumerates all logs with `wevtutil.exe el` and clears each one with `wevtutil.exe cl`.
 
 **System Repair & Update (4-5):**
 
-4. System Integrity Repair: asks confirmation, runs `sfc /scannow`, then `DISM /Online /Cleanup-Image /RestoreHealth`.
-5. Update All Installed Apps: asks confirmation, runs `winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements`.
+4. System Integrity Repair: asks confirmation and optional restore point, runs `sfc /scannow` then `DISM /Online /Cleanup-Image /RestoreHealth` with `[1/2] [2/2]` progress hints.
+5. Update All Installed Apps: asks confirmation and optional restore point, runs `winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements` with `[1/1]` progress hint.
 
 **Network (6):**
 
-6. Complete Network Reset: asks confirmation, runs `netsh winsock reset`, `netsh int ip reset`, and `ipconfig /flushdns`; tells user to restart.
+6. Complete Network Reset: asks confirmation and optional restore point, runs `netsh winsock reset`, `netsh int ip reset`, and `ipconfig /flushdns`; tells user to restart.
 
 **Performance (7-8):**
 
-7. Manual SSD TRIM: lists volumes with PowerShell `Get-Volume`, sanitizes and validates a single drive letter, confirms the drive exists, runs `defrag <drive>: /L /V`, displays output, and appends it to the log.
+7. Manual SSD TRIM: lists volumes with PowerShell `Get-Volume`, sanitizes and validates a single drive letter, confirms the drive exists, asks Y/N confirmation and optional restore point, runs `defrag <drive>: /L /V`, displays output, and appends it to the log.
 8. Low Latency Mode: auto-detects CPU architecture (Intel/AMD x64 or Snapdragon ARM64), fetches the latest ViVeTool release from GitHub via API, downloads and extracts the matching ZIP to `tools/vivetool/`, and provides a sub-menu to query/enable/disable feature IDs 58989092, 60716524, and 61391826. Version caching avoids redundant downloads.
 
 **Security & Privacy (9-10):**
 
-9. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
+9. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, optional restore point, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
 10. Kill Browser AI: warns that it downloads and executes a remote PowerShell script, requires typing `KILL`, then launches PowerShell with `-ExecutionPolicy Bypass` and a guarded `try/catch` wrapper around the configured gist command so the result is logged.
 
-**Tools (11):**
+**Recovery (11):**
 
-11. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
+11. Recovery & Safe Mode Tools: sub-menu for bcdedit boot config, safe mode (minimal/networking/cmd-prompt), WinRE status/enable/disable, restore normal boot, restart to recovery.
 
-12. Exit: closes the tool.
+**Tools (20-22):**
+
+20. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
+21. Check for Updates: queries GitHub releases API, compares with local version (1.0.3), opens browser for download if newer.
+22. Cleanup Exclusion List: manage JSON-based exclusion list in `config/exclusions.json`; paths matching exclusions are skipped during cleanup.
+
+23. Exit: asks Y/N confirmation, then closes the tool.
+
+**Diagnostics (11-18):**
+
+11. System Information: read-only summary of OS, CPU, RAM, disk, uptime using stdlib + ctypes + winreg.
+12. Windows Update Status: queries wuauserv, Auto Update registry config, last install/search dates; runs UsoClient scan.
+13. Defender Status & Quick Scan: displays Get-MpComputerStatus fields, optional MpCmdRun signature update, optional Start-MpQuickScan.
+14. Service Health Check: checks 20 critical services via PowerShell Get-Service, shows Running/Stopped summary.
+15. Disk Health & SMART: Get-PhysicalDisk + Get-StorageReliabilityCounter for health, wear, temp, errors; volume summary.
+16. Driver Inventory: parses driverquery /FO CSV output, shows all drivers with type/date summary.
+17. Network Snapshot: captures ipconfig/route/netsh/netstat state to file and log; optional diff against previous snapshot.
+18. Export Logs & Report: generates a plain-text session report (features run, commands, warnings) and archives all logs to ZIP.
+19. System Cleanup: now supports selective target sub-menu (Windows Temp, User Temp, Prefetch, SoftDist, Vendor Roots) with exclusion list integration.
 
 ## Implemented Feature Targets
 
@@ -132,6 +150,16 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - Feature ID changes in future Windows builds may require updates
 - Reboot may be required after changing low latency features
 
+## Restore Point Feature
+
+`create_restore_point(logger, description)` in `toolbox_base.py` creates a system restore point before destructive operations. Key behaviors:
+
+- Uses `Checkpoint-Computer` via single-line PowerShell
+- Asks user `(Y/N)` before attempting
+- Failure (e.g. System Restore disabled) logs WARN and continues — never blocks the feature
+- Known error `0x80070422` detected and shown with a helpful message
+- Integrated into features 1-7 and 9 (all except read-only/remote features)
+
 ## Known Gaps And Risks
 
 - The current Python launcher/elevation flow uses `IsUserAnAdmin()` plus `ShellExecuteW(..., "runas", ...)`; keep both the `uv` and `sys.executable` launch paths working.
@@ -140,6 +168,18 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - The remote `kill_ai.ps1` gist was retrieved and reviewed on 2026-06-13; it disables Chrome and Edge on-device AI by applying registry policy keys and locking the `OptGuideOnDeviceModel` folders, but it still remains high risk and is only executed through the guarded PowerShell wrapper after explicit `KILL` confirmation.
 - `BLANK_README.md` is present locally but ignored by git and appears to be an unused Best-README-Template source file.
 - No tracked `.agents/skills/` directory exists at the 2026-06-16 scan; any future repo-local skill installation must clone a public GitHub source and record provenance.
+
+## New / Changed Files (Production Version)
+
+- `pyproject.toml` — added `[tool.ruff]` section for lint/format/isort
+- `toolbox_base.py` — added `Color`, `cprint()`, `Spinner`, dynamic `TOOLBOX_VERSION` from pyproject.toml
+- `ldlwintoolbox.py` — colored main menu with version display, box-drawing chars
+- `scripts/check.ps1` — unified ruff lint + format + import check runner
+- `.github/workflows/ci.yml` — CI workflow (Windows + ruff-action)
+- `.github/workflows/release.yml` — Release workflow (PyInstaller build + GitHub Release)
+- `LDLWinToolBox.spec` — PyInstaller spec for EXE packaging
+- `README.md` — rewritten using `BLANK_README.md` (Best-README-Template) format, covering all 23 menu features, architecture, and production build info
+- `memory/2026-07-05.md` — updated with Production Version work log
 
 ## Persistent Working Rules
 
@@ -152,3 +192,23 @@ Treat the remote `iwr | iex` command as high risk. Do not execute it during anal
 - Keep prompt/history updates append-friendly and date-stamped.
 - Keep future enhancement ideas in `memory/feature-ideas.md` so they can be reread and prioritized later.
 - Treat the `Suggested Priority Order` section in `memory/feature-ideas.md` as the default implementation roadmap until the user asks to reorder it.
+
+## Production Version Plan (2026-07-05)
+
+Four-phase plan to move from feature-complete to production-ready. All phases completed.
+
+### Phase A: Code Hardening
+- A1: Ruff lint + format + isort in `pyproject.toml`
+- A2: Full type annotations in all `features/*.py` (already complete)
+- A3: `scripts/check.ps1` — unified lint/format runner
+- A4: `.github/workflows/ci.yml` — run check on every push/PR
+
+### Phase B: UX Polish
+- B1: ANSI color constants (`Color` class) + `cprint()` in `toolbox_base.py`, zero dependencies
+- B2: `Spinner` context manager for long-running tasks (thread-based, zero deps)
+- B3: Colored menu with box-drawing chars, group headers, version display, dimmed log path
+
+### Phase C: Packaging & Release
+- C1: PyInstaller `.spec` at project root
+- C2: `.github/workflows/release.yml` — auto-build + release on version tag
+- C3: Version sourced from `pyproject.toml` via `tomllib` at runtime (`TOOLBOX_VERSION`)
