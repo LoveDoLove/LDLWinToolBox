@@ -1,221 +1,76 @@
-# MEMORY.md
+AI 長期記憶與專案約定 (AI Long-Term Memory & Project Conventions)
 
-Last updated: 2026-07-05
+本文件是本倉庫 AI 代理人的「長期記憶與專案約定中心」。每一次與 AI 開始新對話時，AI 必須首先讀取本檔案與 AGENTS.md，以恢復對當前專案、技術棧、用戶偏好與持久約定的全面認知。
 
-## User Preferences
+1. 專案基礎設定 (Project Context)
 
-- User prefers Chinese-language collaboration when discussing work, while repository documentation may remain English if that matches the existing files.
-- Always analyze the current project first, then analyze prompt/history files, then apply future rules while preserving history.
-- Use Python as the primary implementation language for this project, with Windows command-line tools where appropriate.
-- Follow RTK command discipline from `C:\Users\LoveDoLove\.codex\RTK.md`; in this PowerShell environment, use `rtk cmd /c ...` for standard Windows commands.
-- Keep changes surgical and verifiable. Do not refactor unrelated code.
-- Skill packages under `.agents/skills/` must be cloned from public GitHub open-source skills, not authored manually in this repository.
+本節記錄當前專案的根本設定，請根據實際情況進行動態更新：
 
-## Project Snapshot
+應用名稱 (App Name): LDL Windows ToolBox
 
-- App name: `LDLWinToolBox`
-- Repository path: `D:\Projects\WinProjects\LDLWinToolBox`
-- Git remote: `https://github.com/LoveDoLove/LDLWinToolBox.git`
-- Current branch at scan time: `lovedolove`
-- Latest scanned commit: `d0b50e5 Fix VSVersionInfo deserialization: use str() not repr() for eval-safe format`
-- Latest repository scan: `2026-07-05`.
-- License: Apache License 2.0
-- Primary executable: `LDLWinToolBox.bat` thin launcher for `ldlwintoolbox.py` via `uv run -- python`
-- Packaging metadata: `pyproject.toml`, `uv.lock`
-- Primary docs: `README.md`, `AGENTS.md`, `MEMORY.md`, `memory/tasks.md`
-- Backlog notes: `memory/feature-ideas.md`
-- Prompt/history docs observed as absent at the latest scan: `ANALYSIS.md`, `PROMPT_GUIDE.md`
-- GitHub metadata: `.github/FUNDING.yml`, `.github/ISSUE_TEMPLATE/bug-report---.md`, `.github/ISSUE_TEMPLATE/feature-request---.md`
-- Asset: `images/logo.png`
-- Ignored local template observed: `BLANK_README.md`
-- Runtime logs observed under `logs\`; `*.log` is ignored by `.gitignore`. Downloaded binaries in `tools/` are also git-ignored.
+資料庫 (App Database): 無（使用 JSON 設定檔儲存於 config/exclusions.json）
 
-## Current Repository Logic
+前端技術棧 (Frontend): ANSI Terminal Menu / Console（Python，依賴標準函式庫與方塊繪製字元）
 
-`LDLWinToolBox.bat` is now a thin launcher that invokes `uv run -- python ldlwintoolbox.py`. The Python entry point initializes the menu, checks for Administrator access, relaunches with UAC when needed, prefers `uv` when available and falls back to `sys.executable`, switches to the script directory, and creates a timestamped structured log file named `logs\LDLWinToolBox_yyMMddHHmmss.log`.
+後端技術棧 (Backend): Python 3.11+（僅使用標準函式庫，透過 subprocess 呼叫系統指令）
 
-The project has been refactored into a modular structure:
-- `ldlwintoolbox.py` — thin entry point with admin logic and main menu dispatch
-- `toolbox_base.py` — shared infrastructure (Logger, CommandResult, run/command/prompt helpers)
-- `features/` — one file per feature, each importing only from `toolbox_base`
+主權部署環境 (Deployment): GitHub Releases（PyInstaller 打包為單一 .exe）
 
-Logging behavior:
+2. 使用者偏好與互動慣例 (User Preferences)
 
-- Creates `logs\` automatically and falls back to the script directory if the log directory cannot be created.
-- Writes a session header with script path, working directory, user, computer, OS, system root, temp path, and log path.
-- Uses helper labels for `INFO`, `WARN`, `ERROR`, `CMD`, and `OK` log entries.
-- Records feature section boundaries, menu selections, user cancellations, key command starts, command exit codes, and major completion messages.
-- Keeps raw command output in the same log file while keeping console output concise.
-- Provides a read-only Log History viewer that lists recent logs newest-first, caps the picker at the latest 9 entries, and opens a selected file with an internal paged console viewer.
+溝通語言：預設使用 繁體中文 (Traditional Chinese) 進行所有對話、架構解釋與日誌記錄（除程式碼註解、變數命名與技術文檔採用英文）。
 
-Implemented menu behavior (each feature in its own `features/*.py` file), grouped into logical categories:
+主要語言：Python（此專案）；遵循 pyproject.toml 中 Ruff 設定的程式碼風格。
 
-**System Cleanup (1-3):**
+指令紀律：嚴格遵循 RTK.md 規範，使用 rtk cmd /c ... 前綴執行 Windows 指令。僅在 Python 或原生工具無法達成時，才使用 PowerShell 單行指令。
 
-1. Advanced System Cleanup: asks Y/N confirmation, optional restore point; calculates free space before and after cleanup, stops `wuauserv` and `bits`, deletes Windows/user temp files, Prefetch, SoftwareDistribution downloads; **optionally** removes vendor driver roots (`AMD`, `NVIDIA`, `INTEL`) via separate Y/N prompt; rebuilds temp directories; restarts services; reports MB freed. Event Viewer logs are intentionally handled by option 3 instead of direct file deletion.
-2. Windows Component Store Cleanup: asks Y/N confirmation and optional restore point, runs `DISM.exe /Online /Cleanup-Image /StartComponentCleanup` with `[1/1]` progress hint.
-3. Clear Event Viewer Logs: asks Y/N confirmation and optional restore point; enumerates all logs with `wevtutil.exe el` and clears each one with `wevtutil.exe cl`.
+程式碼風格：
+- 追求極簡與健壯性，嚴禁過度設計。
+- 優先使用 Python 標準函式庫，不引入外部依賴。
+- 外科手術式變更：只修改目標區域，不重構無關的程式碼。
+- 必須符合內置技能包 karpathy-guidelines 的編碼行為準則。
 
-**System Repair & Update (4-5):**
+管理員行為：
+- 自動偵測管理員權限；若無管理員權限則以唯讀模式執行。
+- 必要時以 UAC 重新啟動（透過 shell.Run 提升權限）。
 
-4. System Integrity Repair: asks confirmation and optional restore point, runs `sfc /scannow` then `DISM /Online /Cleanup-Image /RestoreHealth` with `[1/2] [2/2]` progress hints.
-5. Update All Installed Apps: asks confirmation and optional restore point, runs `winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements` with `[1/1]` progress hint.
+確認機制 (HITL)：所有破壞性寫入、長時間執行作業、遠端執行或涉及暫存檔目錄的操作，AI 必須暫停並明確徵求使用者 Y/N 批准。
 
-**Network (6):**
+日誌：時間戳結構化日誌寫入 logs/LDLWinToolBox_yyMMddHHmmss.log，主控台保持簡潔輸出。
 
-6. Complete Network Reset: asks confirmation and optional restore point, runs `netsh winsock reset`, `netsh int ip reset`, and `ipconfig /flushdns`; tells user to restart.
+技能包：必須從公開 GitHub 開源 Skills 倉庫克隆，嚴禁在本倉庫中自行手動編寫技能包。
 
-**Performance (7-8):**
+檔案保留：不刪除舊有的決定、歷史記錄或備份檔案，除非使用者明確要求。
 
-7. Manual SSD TRIM: lists volumes with PowerShell `Get-Volume`, sanitizes and validates a single drive letter, confirms the drive exists, asks Y/N confirmation and optional restore point, runs `defrag <drive>: /L /V`, displays output, and appends it to the log.
-8. Low Latency Mode: auto-detects CPU architecture (Intel/AMD x64 or Snapdragon ARM64), fetches the latest ViVeTool release from GitHub via API, downloads and extracts the matching ZIP to `tools/vivetool/`, and provides a sub-menu to query/enable/disable feature IDs 58989092, 60716524, and 61391826. Version caching avoids redundant downloads.
+3. 記憶同步與更新協議 (Memory Sync Protocol)
 
-**Security & Privacy (9-10):**
+為了確保 AI 的記憶在跨對話中永不丟失且持續演進，AI 助手必須遵循以下同步機制：
 
-9. Disable BitLocker `(Plan)`: shows current BitLocker status, validates a selected drive letter, displays selected drive status, optional restore point, requires typing `DISABLE`, then starts `manage-bde -off <drive>:` and logs updated status.
-10. Kill Browser AI: warns that it downloads and executes a remote PowerShell script, requires typing `KILL`, then launches PowerShell with `-ExecutionPolicy Bypass` and a guarded `try/catch` wrapper around the configured gist command so the result is logged.
+3.1 每日日誌機制 (Daily Logs YYYY-MM-DD.md)
 
-**Recovery (11):**
+每次對話結束前，AI 必須將當前的關鍵決策、面臨的問題與下一步計劃，摘要寫入 memory/YYYY-MM-DD.md（以當前日期命名）。
 
-11. Recovery & Safe Mode Tools: sub-menu for bcdedit boot config, safe mode (minimal/networking/cmd-prompt), WinRE status/enable/disable, restore normal boot, restart to recovery.
+日誌格式標準：
 
-**Tools (20-22):**
+# 每日工作日誌: YYYY-MM-DD
+* **今日進度**: [簡述完成了哪些功能/修復了哪些 Bug]
+* **關鍵決策**: [例如切換了某個 API、更新了某個 Schema]
+* **遭遇阻礙**: [遇到的技術難題與解決路徑]
+* **明日計劃**: [待續的具體工作事項]
 
-20. View Log History: lists the newest toolbox logs in `logs\`, lets the user choose one of the latest 9 entries, and opens it with paged console viewing.
-21. Check for Updates: queries GitHub releases API, compares with local version (1.0.7), opens browser for download if newer.
-22. Cleanup Exclusion List: manage JSON-based exclusion list in `config/exclusions.json`; paths matching exclusions are skipped during cleanup.
 
-23. Exit: asks Y/N confirmation, then closes the tool.
+3.2 任務追蹤機制 (tasks.md)
 
-**Diagnostics (11-18):**
+所有的跨對話待辦事項必須維護在 memory/tasks.md 中。
 
-11. System Information: read-only summary of OS, CPU, RAM, disk, uptime using stdlib + ctypes + winreg.
-12. Windows Update Status: queries wuauserv, Auto Update registry config, last install/search dates; runs UsoClient scan.
-13. Defender Status & Quick Scan: displays Get-MpComputerStatus fields, optional MpCmdRun signature update, optional Start-MpQuickScan.
-14. Service Health Check: checks 20 critical services via PowerShell Get-Service, shows Running/Stopped summary.
-15. Disk Health & SMART: Get-PhysicalDisk + Get-StorageReliabilityCounter for health, wear, temp, errors; volume summary.
-16. Driver Inventory: parses driverquery /FO CSV output, shows all drivers with type/date summary.
-17. Network Snapshot: captures ipconfig/route/netsh/netstat state to file and log; optional diff against previous snapshot.
-18. Export Logs & Report: generates a plain-text session report (features run, commands, warnings) and archives all logs to ZIP.
-19. System Cleanup: now supports selective target sub-menu (Windows Temp, User Temp, Prefetch, SoftDist, Vendor Roots) with exclusion list integration.
+任務分為三個看板狀態：[ ] Backlog（待辦）、[>] In Progress（進行中）、[x] Completed（已完成）。
 
-## Implemented Feature Targets
+當 AI 助手完成一項任務時，必須同步更新 memory/tasks.md，並在日誌中註記。
 
-The user-listed feature targets below were implemented:
+4. 持久技術約定 (Persistent Rules)
 
-### 2026-06-07 (Batch)
+安全優先原則：所有新開發的端點（Endpoints）或微服務，必須在核心邏輯外圍包裹安全認證層，貫徹 AGENTS.md 中的「受控副官防禦」。
 
-- Disable BitLocker `[Plan]` with status display, drive validation, and `DISABLE` confirmation.
-- Kill Browser AI using:
-  `powershell -NoProfile -ExecutionPolicy Bypass -Command "try { iwr -useb https://gist.githubusercontent.com/raw/d08347a1f1083e4e3d29daf17f86223c/kill_ai.ps1 | iex; exit 0 } catch { Write-Error $_; exit 1 }"`
+零退化 CI/CD 承諾：凡是有新的重大業務邏輯變更，必須同步在 tests/ 下建立對應的斷言測試，以利後續自動化品質飛輪（AgentOps）的集成。
 
-Treat the remote `iwr | iex` command as high risk. Do not execute it during analysis. The menu feature requires a clear warning, `KILL` confirmation, and logging.
-
-### 2026-07-05 — PyInstaller Version Fix (v1.0.7)
-
-- **Bug:** `repr(vers)` writes `versioninfo.VSVersionInfo(...)` (qualified names), but `load_version_info_from_text_file` calls `eval(text)` in `versioninfo.py` module scope where only unqualified names (`VSVersionInfo`, `FixedFileInfo`, etc.) exist — `versioninfo` is not importable from within the module.
-- **Fix:** Changed `repr(vers)` → `str(vers)` in `LDLWinToolBox.spec:57`. `str()` produces unqualified names matching the `pyi-grab_version` serialization format that `load_version_info_from_text_file` is designed to parse.
-- Bumped version to `1.0.7`, created PR #8 (release-1.0.7 → main), merged.
-
-### 2026-07-05 (Python)
-
-- Modular refactor: split monolithic `ldlwintoolbox.py` into `toolbox_base.py` + `features/` (one file per feature).
-- Low Latency Mode: auto-detects `platform.machine()` → `IntelAmd` (AMD64/x86) or `SnapdragonArm64` (ARM64), fetches latest ViVe release from `api.github.com/repos/thebookisclosed/ViVe/releases/latest`, downloads matching ZIP via `urllib.request`, extracts with `zipfile` to `tools/vivetool/`, caches version in `version.txt`, provides sub-menu for `/query`, `/enable`, `/disable` on IDs 58989092, 60716524, 61391826.
-- Menu reorganization into logical groups: System Cleanup, Repair & Update, Network, Performance, Security & Privacy, Tools.
-
-## Documentation And Prompt Files
-
-- `README.md` describes the app, prerequisites, installation, usage, license, and contact info.
-- `AGENTS.md` records AI working rules, startup order, project rules, and current feature inventory.
-- `MEMORY.md` records long-term user preferences, repository facts, current logic, risks, and persistent rules.
-- `memory/tasks.md` tracks cross-session work.
-- `ANALYSIS.md` and `PROMPT_GUIDE.md` were not present in the latest working tree scan; if restored later, preserve their history and append updates.
-- Existing prompt rules emphasize auto-admin preservation, history preservation, input sanitization, clean verbosity, and long-running process warnings.
-
-## New Feature Details
-
-### Low Latency Mode (Menu 8)
-
-**Architecture detection:**
-- `platform.machine()` → `AMD64` → Intel/AMD x64
-- `platform.machine()` → `ARM64` → Snapdragon ARM64
-
-**ViVeTool management:**
-- Stores tool in `tools/vivetool/` under script directory
-- Caches version in `version.txt` to skip redundant downloads
-- Falls back to cached binary when GitHub API is unavailable
-
-**Sub-menu:**
-1. Check Status — runs `ViVeTool.exe /query /id:58989092,60716524,61391826`
-2. Enable — runs `ViVeTool.exe /enable /id:58989092,60716524,61391826` (with Y/N confirmation)
-3. Disable — runs `ViVeTool.exe /disable /id:58989092,60716524,61391826` (with Y/N confirmation)
-4. Return to Main Menu
-
-**Risks:**
-- Downloads binaries from GitHub; requires internet on first run
-- Feature ID changes in future Windows builds may require updates
-- Reboot may be required after changing low latency features
-
-## Restore Point Feature
-
-`create_restore_point(logger, description)` in `toolbox_base.py` creates a system restore point before destructive operations. Key behaviors:
-
-- Uses `Checkpoint-Computer` via single-line PowerShell
-- Asks user `(Y/N)` before attempting
-- Failure (e.g. System Restore disabled) logs WARN and continues — never blocks the feature
-- Known error `0x80070422` detected and shown with a helpful message
-- Integrated into features 1-7 and 9 (all except read-only/remote features)
-
-## Known Gaps And Risks
-
-- The current Python launcher/elevation flow uses `IsUserAnAdmin()` plus `ShellExecuteW(..., "runas", ...)`; keep both the `uv` and `sys.executable` launch paths working.
-- Cleanup no longer deletes Event Viewer log files directly; option 3 (Clear Event Viewer Logs) remains the safe `wevtutil` path for clearing logs.
-- No circular dependencies; each feature imports only from `toolbox_base`
-- The remote `kill_ai.ps1` gist was retrieved and reviewed on 2026-06-13; it disables Chrome and Edge on-device AI by applying registry policy keys and locking the `OptGuideOnDeviceModel` folders, but it still remains high risk and is only executed through the guarded PowerShell wrapper after explicit `KILL` confirmation.
-- `BLANK_README.md` is present locally but ignored by git and appears to be an unused Best-README-Template source file.
-- No tracked `.agents/skills/` directory exists at the 2026-06-16 scan; any future repo-local skill installation must clone a public GitHub source and record provenance.
-
-## New / Changed Files (Production Version)
-
-- `pyproject.toml` — added `[tool.ruff]` section for lint/format/isort
-- `toolbox_base.py` — added `Color`, `cprint()`, `Spinner`, dynamic `TOOLBOX_VERSION` from pyproject.toml
-- `ldlwintoolbox.py` — colored main menu with version display, box-drawing chars
-- `scripts/check.ps1` — unified ruff lint + format + import check runner
-- `.github/workflows/ci.yml` — CI workflow (Windows + ruff-action)
-- `.github/workflows/release.yml` — Release workflow (PyInstaller build + GitHub Release)
-- `LDLWinToolBox.spec` — PyInstaller spec for EXE packaging; critical `str(vers)` vs `repr(vers)` fix applied after v1.0.6 release build failure
-- `README.md` — rewritten using `BLANK_README.md` (Best-README-Template) format, covering all 23 menu features, architecture, and production build info
-- `memory/2026-07-05.md` — updated with Production Version work log
-
-## Persistent Working Rules
-
-- Preserve the app as a Python-first Windows utility with a thin Batch launcher unless the user explicitly asks for a different architecture.
-- Prefer Python standard library calls and native Windows commands for implementation.
-- Keep PowerShell calls minimal, one-line, and justified by Windows capability gaps.
-- Preserve auto-admin behavior and structured timestamped logs under `logs\`.
-- Keep console messages readable and route verbose command output into the log.
-- Add `(Y/N)` confirmation for long-running, destructive, privacy-affecting, or remote-execution operations.
-- Keep prompt/history updates append-friendly and date-stamped.
-- Keep future enhancement ideas in `memory/feature-ideas.md` so they can be reread and prioritized later.
-- Treat the `Suggested Priority Order` section in `memory/feature-ideas.md` as the default implementation roadmap until the user asks to reorder it.
-
-## Production Version Plan (2026-07-05)
-
-Four-phase plan to move from feature-complete to production-ready. All phases completed.
-
-### Phase A: Code Hardening
-- A1: Ruff lint + format + isort in `pyproject.toml`
-- A2: Full type annotations in all `features/*.py` (already complete)
-- A3: `scripts/check.ps1` — unified lint/format runner
-- A4: `.github/workflows/ci.yml` — run check on every push/PR
-
-### Phase B: UX Polish
-- B1: ANSI color constants (`Color` class) + `cprint()` in `toolbox_base.py`, zero dependencies
-- B2: `Spinner` context manager for long-running tasks (thread-based, zero deps)
-- B3: Colored menu with box-drawing chars, group headers, version display, dimmed log path
-
-### Phase C: Packaging & Release
-- C1: PyInstaller `.spec` at project root
-- C2: `.github/workflows/release.yml` — auto-build + release on version tag
-- C3: Version sourced from `pyproject.toml` via `tomllib` at runtime (`TOOLBOX_VERSION`)
-- C4 (fix): Version text serialization must use `str(vers)` not `repr(vers)` — see AGENTS.md for root cause. Release v1.0.5 and v1.0.6 builds failed without this fix. Fixed in v1.0.7.
+技能包（Agent Skills）優先：解決特定領域問題時（例如：SEO 審計、性能優化、程式碼重構），先檢索本地 .agents/skills/，優先調用已有技能。
