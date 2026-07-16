@@ -74,3 +74,21 @@ AI 長期記憶與專案約定 (AI Long-Term Memory & Project Conventions)
 零退化 CI/CD 承諾：凡是有新的重大業務邏輯變更，必須同步在 tests/ 下建立對應的斷言測試，以利後續自動化品質飛輪（AgentOps）的集成。
 
 技能包（Agent Skills）優先：解決特定領域問題時（例如：SEO 審計、性能優化、程式碼重構），先檢索本地 .agents/skills/，優先調用已有技能。
+
+5. 工具狀態與技能索引 (Tool State & Skill Index)
+
+本倉庫的工具安裝狀態自動維護在 memory/tools-state.json，AI 每次對話會自動讀取並更新。
+
+已註冊工具列表（共 7 項）：
+- karpathy-guidelines (skill) — 編碼行為準則
+- skillx (skill) — 技能市場搜尋與調用，每項任務都應載入
+- ui-ux-pro-max (skill) — UI/UX 設計智慧：84 種風格、192 種色板、74 種字體
+- context7 (mcp) — 即時程式庫文件查詢
+- codebase-memory-mcp (mcp) — 程式碼知識圖譜
+- opencode-wakatime (plugin) — WakaTime 使用追蹤
+- superpowers (framework) — 代理人技能框架與開發方法論
+
+如需重新檢測或安裝，請執行 repo 根目錄的 init.ps1：
+.\init.ps1         # 逐項詢問安裝
+.\init.ps1 --yes   # 全自動安裝
+.\init.ps1 --no-install  # 只偵測狀態
